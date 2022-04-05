@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{01581593-00CC-05E8-4BB5-DE9370206819}</ProjectGuid>
+    <ProjectGuid>{069D60E2-3ABF-EBB2-2E72-313A77FBA474}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -56,9 +56,10 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Block.cs" />
     <Compile Include="Assets\Scripts\Textures.cs" />
+    <Compile Include="Assets\Scripts\Block.cs" />
     <Compile Include="Assets\Scripts\Chunk.cs" />
+    <Compile Include="Assets\Scripts\World.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -625,15 +626,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Unity.Timeline.Player.csproj">
-      <Project>{AF1E7EDF-B1AC-9357-E8D2-99BCE54A8C87}</Project>
+      <Project>{974A8A6F-961D-45A7-1746-47326230A348}</Project>
       <Name>Unity.Timeline.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.TextMeshPro.Player.csproj">
-      <Project>{AAC37154-B4C3-415A-650E-0078602C0FA1}</Project>
+      <Project>{F9007C34-B2D3-D4D0-7CD9-D543DF08E412}</Project>
       <Name>Unity.TextMeshPro.Player</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEngine.UI.Player.csproj">
-      <Project>{4175FC37-CA84-8EB6-BBC7-3A725EFBFEB2}</Project>
+      <Project>{EEB594E2-A793-8BFD-B040-0F9F708EC5F7}</Project>
       <Name>UnityEngine.UI.Player</Name>
     </ProjectReference>
   </ItemGroup>

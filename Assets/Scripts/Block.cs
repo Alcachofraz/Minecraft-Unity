@@ -6,27 +6,15 @@ public enum CubeSide { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
 
 public class Block
 {
-    
-    Material material;
     BlockType blockType;
-    GameObject parent;
+    Chunk owner;
     Vector3 position;
-    bool isSolid;
 
-    public Block(BlockType blockType, Vector3 position, GameObject parent, Material material)
+    public Block(BlockType blockType, Vector3 position, Chunk parent, Material material)
     {
         this.blockType = blockType;
-        this.parent = parent;
+        this.owner = parent;
         this.position = position;
-        this.material = material;
-        if (blockType == BlockType.AIR)
-        {
-            this.isSolid = false;
-        }
-        else
-        {
-            this.isSolid = true;
-        }
     }
 
     void Quad(CubeSide side)
@@ -87,7 +75,7 @@ public class Block
 
         GameObject quad = new GameObject("Quad");
         quad.transform.position = this.position;
-        quad.transform.parent = parent.transform;
+        quad.transform.parent = owner.gameObject.transform;
 
         MeshFilter mf = quad.AddComponent<MeshFilter>();
         mf.mesh = mesh;
@@ -95,10 +83,10 @@ public class Block
 
     bool HasSolidNeighbour(int x, int y, int z)
     {
-        Block[,,] chunkData = parent.GetComponent<Chunk>().chunkData;
+        Block[,,] chunkData = owner.chunkData;
         try
         {
-            return chunkData[x, y, z].isSolid;
+            return chunkData[x, y, z].blockType.IsSolid();
         }
         catch 
         {

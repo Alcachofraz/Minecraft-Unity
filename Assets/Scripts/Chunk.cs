@@ -2,36 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunk : MonoBehaviour
+public class Chunk
 {
     public Material material;
     public Block[,,] chunkData;
     public Vector3 chunkSize;
+    public GameObject gameObject;
 
-    IEnumerator BuildChunk(int sizeX, int sizeY, int sizeZ)
+    public Chunk(string name, Vector3 position, Material material)
     {
-        chunkData = new Block[sizeX, sizeY, sizeZ];
-        for (int z = 0; z < sizeZ; z++)
+        gameObject = new GameObject(name);
+        gameObject.gameObject.transform.position = position;
+        this.material = material;
+        Build();
+    }
+
+    private void Build()
+    {
+        chunkData = new Block[World.chunkSize, World.chunkSize, World.chunkSize];
+        for (int z = 0; z < World.chunkSize; z++)
         {
-            for (int y = 0; y < sizeY; y++)
+            for (int y = 0; y < World.chunkSize; y++)
             {
-                for (int x = 0; x < sizeX; x++)
+                for (int x = 0; x < World.chunkSize; x++)
                 {
                     Vector3 position = new Vector3(x, y, z);
-                    chunkData[x, y, z] = new Block(getBlockType(x, y, z), position, this.gameObject, material); 
+                    chunkData[x, y, z] = new Block(getBlockType(x, y, z), position, this, material);
                 }
             }
         }
-        for (int z = 0; z < sizeZ; z++)
+    }
+
+    public void Draw() {
+        for (int z = 0; z < World.chunkSize; z++)
         {
-            for (int y = 0; y < sizeY; y++)
+            for (int y = 0; y < World.chunkSize; y++)
             {
-                for (int x = 0; x < sizeX; x++)
+                for (int x = 0; x < World.chunkSize; x++)
                 {
                     chunkData[x, y, z].Draw();
                 }
             }
-            yield return null;
         }
         CombineQuads();
     }
@@ -39,14 +50,14 @@ public class Chunk : MonoBehaviour
     private BlockType getBlockType(int x, int y, int z)
     {
         if (Random.Range(0f, 1f) < 0.5f)
-            return BlockType.GRASS;
+            return BlockType.LOG;
         else
-            return BlockType.AIR;
+            return BlockType.LEAVES;
     }
 
     private void CombineQuads()
     {
-        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
         for (int i = 0; i < meshFilters.Length; i++)
         {
@@ -54,29 +65,17 @@ public class Chunk : MonoBehaviour
             combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
         }
 
-        MeshFilter mf = this.gameObject.AddComponent<MeshFilter>();
+        MeshFilter mf = gameObject.AddComponent<MeshFilter>();
         mf.mesh = new Mesh();
 
         mf.mesh.CombineMeshes(combine);
 
-        MeshRenderer renderer = this.gameObject.AddComponent<MeshRenderer>();
+        MeshRenderer renderer = gameObject.AddComponent<MeshRenderer>();
         renderer.material = material;
 
-        foreach (Transform quad in this.transform)
+        foreach (Transform quad in gameObject.transform)
         {
-            Destroy(quad.gameObject);
+            Object.Destroy(quad.gameObject);
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        StartCoroutine(BuildChunk((int)chunkSize.x, (int)chunkSize.y, (int)chunkSize.z));
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -2,26 +2,73 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BlockType { AIR, GRASS, DIRT, STONE }
+public enum BlockType : byte { 
+    AIR, GRASS, DIRT, STONE, SAND, BEDROCK, LOG, LEAVES, LEAVES_SOLID, DIAMOND_ORE
+}
 
 public static class BlockTypeMethods
 {
+    public static (Texture, bool) Info(BlockType b) 
+    {
+        return b switch
+        {
+            BlockType.AIR => (new Texture(10f, 0f, 10f, 0f, 10f, 0f), false),
+            BlockType.GRASS => (new Texture(0f, 15f, 3f, 15f, 2f, 15f), true),
+            BlockType.DIRT => (new Texture(2f, 15f, 2f, 15f, 2f, 15f), true),
+            BlockType.STONE => (new Texture(1f, 15f, 1f, 15f, 1f, 15f), true),
+            BlockType.SAND => (new Texture(2f, 14f, 2f, 14f, 2f, 14f), true),
+            BlockType.BEDROCK => (new Texture(1f, 14f, 1f, 14f, 1f, 14f), true),
+            BlockType.LOG => (new Texture(5f, 14f, 4f, 14f, 5f, 14f), true),
+            BlockType.LEAVES => (new Texture(4f, 12f, 4f, 12f, 4f, 12f), false),
+            BlockType.LEAVES_SOLID => (new Texture(5f, 12f, 5f, 12f, 5f, 12f), true),
+            BlockType.DIAMOND_ORE => (new Texture(1f, 15f, 1f, 15f, 1f, 15f), true),
+            _ => (new Texture(10f, 0f, 10f, 0f, 10f, 0f), true)
+        };
+    }
+
     /// <summary>
     /// Returns an object of type Texture, containing information
     /// about the texture of block of type [b].
     /// </summary>
     public static Texture GetTexture(this BlockType b)
     {
-        return b switch
+        return Info(b).Item1;
+        /*return b switch
         {
-            /**
-            * Block Texture Atlas UV [topX, topY, sideX, sideY, bottomX, bottomY] :
-            */
+            BlockType.AIR => new Texture(10f, 0f, 10f, 0f, 10f, 0f),
             BlockType.GRASS => new Texture(0f, 15f, 3f, 15f, 2f, 15f),
             BlockType.DIRT => new Texture(2f, 15f, 2f, 15f, 2f, 15f),
             BlockType.STONE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
-            _ => null,
-        };
+            BlockType.SAND => new Texture(2f, 14f, 2f, 14f, 2f, 14f),
+            BlockType.BEDROCK => new Texture(1f, 14f, 1f, 14f, 1f, 14f),
+            BlockType.LOG => new Texture(5f, 14f, 4f, 14f, 5f, 14f),
+            BlockType.LEAVES => new Texture(4f, 12f, 4f, 12f, 4f, 12f),
+            BlockType.LEAVES_SOLID => new Texture(5f, 12f, 5f, 12f, 5f, 12f),
+            BlockType.DIAMOND_ORE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
+            _ => new Texture(10f, 0f, 10f, 0f, 10f, 0f)
+        };*/
+    }
+
+    /// <summary>
+    /// Wether this block type is solid or not.
+    /// </summary>
+    public static bool IsSolid(this BlockType b)
+    {
+        return Info(b).Item2;
+        /*return b switch
+        {
+            BlockType.AIR => false,
+            BlockType.GRASS => true,
+            BlockType.DIRT => true,
+            BlockType.STONE => true,
+            BlockType.SAND => true,
+            BlockType.BEDROCK => true,
+            BlockType.LOG => true,
+            BlockType.LEAVES => false,
+            BlockType.LEAVES_SOLID => true,
+            BlockType.DIAMOND_ORE => true,
+            _ => true
+        };*/
     }
 }
 

@@ -81,14 +81,41 @@ public class Block
         mf.mesh = mesh;
     }
 
+    int ConvertToLocalCoordinates(int coord)
+    {
+        return ((coord %= World.chunkSize) < 0) ? coord + World.chunkSize : coord;
+    }
+
     bool HasSolidNeighbour(int x, int y, int z)
     {
-        Block[,,] chunkData = owner.chunkData;
+        Block[,,] chunkData;
+        if (x < 0 || x >= World.chunkSize || y < 0 || y >= World.chunkSize || z < 0 || z >= World.chunkSize)
+        {
+            Vector3 neighbourChunkPosition = owner.gameObject.transform.position 
+                + new Vector3(
+                    (x - (int)position.x) * World.chunkSize, 
+                    (y - (int)position.y) * World.chunkSize, 
+                    (z - (int)position.z) *World.chunkSize
+                );
+            string neighbourChunkName = World.ChunkName(neighbourChunkPosition);
+            if (World.chunks.TryGetValue(neighbourChunkName, out Chunk neighbourChunk))
+            {
+                chunkData = neighbourChunk.chunkData;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            chunkData = owner.chunkData;
+        }
         try
         {
-            return chunkData[x, y, z].blockType.IsSolid();
+            return chunkData[ConvertToLocalCoordinates(x), ConvertToLocalCoordinates(y), ConvertToLocalCoordinates(z)].blockType.IsSolid();
         }
-        catch 
+        catch
         {
             return false;
         }

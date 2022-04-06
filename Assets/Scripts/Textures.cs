@@ -8,7 +8,7 @@ public enum BlockType : byte {
 
 public static class BlockTypeMethods
 {
-    public static (Texture, bool) Info(BlockType b) 
+    /*public static (Texture, bool) Info(BlockType b) 
     {
         return b switch
         {
@@ -24,7 +24,7 @@ public static class BlockTypeMethods
             BlockType.DIAMOND_ORE => (new Texture(1f, 15f, 1f, 15f, 1f, 15f), true),
             _ => (new Texture(10f, 0f, 10f, 0f, 10f, 0f), true)
         };
-    }
+    }*/
 
     /// <summary>
     /// Returns an object of type Texture, containing information
@@ -32,8 +32,8 @@ public static class BlockTypeMethods
     /// </summary>
     public static Texture GetTexture(this BlockType b)
     {
-        return Info(b).Item1;
-        /*return b switch
+        //return BlockInfo(b).Item1;
+        return b switch
         {
             BlockType.AIR => new Texture(10f, 0f, 10f, 0f, 10f, 0f),
             BlockType.GRASS => new Texture(0f, 15f, 3f, 15f, 2f, 15f),
@@ -46,7 +46,7 @@ public static class BlockTypeMethods
             BlockType.LEAVES_SOLID => new Texture(5f, 12f, 5f, 12f, 5f, 12f),
             BlockType.DIAMOND_ORE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
             _ => new Texture(10f, 0f, 10f, 0f, 10f, 0f)
-        };*/
+        };
     }
 
     /// <summary>
@@ -54,8 +54,8 @@ public static class BlockTypeMethods
     /// </summary>
     public static bool IsSolid(this BlockType b)
     {
-        return Info(b).Item2;
-        /*return b switch
+        //return Info(b).Item2;
+        return b switch
         {
             BlockType.AIR => false,
             BlockType.GRASS => true,
@@ -68,7 +68,7 @@ public static class BlockTypeMethods
             BlockType.LEAVES_SOLID => true,
             BlockType.DIAMOND_ORE => true,
             _ => true
-        };*/
+        };
     }
 }
 

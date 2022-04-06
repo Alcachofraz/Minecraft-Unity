@@ -56,10 +56,25 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\World.cs" />
     <Compile Include="Assets\Scripts\Textures.cs" />
     <Compile Include="Assets\Scripts\Block.cs" />
     <Compile Include="Assets\Scripts\Chunk.cs" />
-    <Compile Include="Assets\Scripts\World.cs" />
+    <Compile Include="Assets\Grapher\SettingsWindow.cs" />
+    <Compile Include="Assets\Grapher\Example\DataProvider.cs" />
+    <Compile Include="Assets\Grapher\FileHandler.cs" />
+    <Compile Include="Assets\Grapher\GraphSettings.cs" />
+    <Compile Include="Assets\Grapher\Grapher.cs" />
+    <Compile Include="Assets\Grapher\Channel.cs" />
+    <Compile Include="Assets\Grapher\Grapher.Replay.cs" />
+    <Compile Include="Assets\Grapher\TimeKeeper.cs" />
+    <Compile Include="Assets\Grapher\Sample.cs" />
+    <Compile Include="Assets\Grapher\OpenInFileBrowser.cs" />
+    <Compile Include="Assets\Grapher\Grapher.Draw.cs" />
+    <Compile Include="Assets\Scripts\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Grapher\IMPORTANT_README!.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

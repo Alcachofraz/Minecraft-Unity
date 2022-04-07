@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ChunkStatus { CREATED, BUILT, DRAWN }
+
 public class Chunk
 {
     public Material material;
@@ -9,8 +11,11 @@ public class Chunk
     public Vector3 chunkSize;
     public GameObject gameObject;
 
+    public ChunkStatus status;
+
     public Chunk(string name, Vector3 position, Material material)
     {
+        status = ChunkStatus.BUILT;
         gameObject = new GameObject(name);
         gameObject.gameObject.transform.position = position;
         this.material = material;
@@ -27,10 +32,15 @@ public class Chunk
                 for (int x = 0; x < World.chunkSize; x++)
                 {
                     Vector3 position = new Vector3(x, y, z);
-                    chunkData[x, y, z] = new Block(GenerateBlockType(x, y, z), position, this, material);
+                    chunkData[x, y, z] = new Block(WorldGeneration.Get(
+                        (int)gameObject.transform.position.x + x,
+                        (int)gameObject.transform.position.y + y,
+                        (int)gameObject.transform.position.z + z
+                    ), position, this, material);
                 }
             }
         }
+        status = ChunkStatus.BUILT;
     }
 
     public void Draw() {
@@ -45,25 +55,17 @@ public class Chunk
             }
         }
         CombineQuads();
-    }
+        MeshCollider collider = gameObject.AddComponent<MeshCollider>();
+        collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
 
-    private BlockType GenerateBlockType(int x, int y, int z)
-    {
-        int blockX = (int)gameObject.transform.position.x + x;
-        int blockY = (int)gameObject.transform.position.y + y;
-        int blockZ = (int)gameObject.transform.position.z + z;
-        int height = Utils.GenerateHeight(blockX, blockZ, World.columnHeight * World.chunkSize, 0.001f, 6, 0.7f);
-        int stoneHeight = Utils.GenerateHeight(blockX, blockZ, (World.columnHeight * World.chunkSize) - 4, 0.001f, 5, 0.7f);
-        if (blockY < 1) return BlockType.BEDROCK;
-        if (blockY < 3)
-        {
-            if (Random.Range(0f, 10f) > blockY * 2.6) return BlockType.BEDROCK;
-            else return BlockType.STONE;
-        }
-        else if (blockY < stoneHeight) return BlockType.STONE;
-        else if (blockY < height) return BlockType.DIRT;
-        else if (blockY == height) return BlockType.GRASS;
-        else return BlockType.AIR;
+        // Remove friction from mesh collider
+        collider.material.staticFriction = 0;
+        collider.material.dynamicFriction = 0;
+        collider.material.bounciness = 0;
+        collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+        collider.material.bounceCombine = PhysicMaterialCombine.Minimum;
+
+        status = ChunkStatus.DRAWN;
     }
 
     private void CombineQuads()

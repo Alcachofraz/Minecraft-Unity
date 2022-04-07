@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BlockType : byte { 
-    AIR, GRASS, DIRT, STONE, SAND, BEDROCK, LOG, LEAVES, LEAVES_SOLID, DIAMOND_ORE
+public enum BlockType { 
+    AIR, GRASS, DIRT, STONE, SAND, BEDROCK, LOG, LEAVES, LEAVES_SOLID, IRON_ORE, COAL_ORE, GOLD_ORE, REDSTONE_ORE, DIAMOND_ORE
 }
 
 public static class BlockTypeMethods
@@ -44,7 +44,11 @@ public static class BlockTypeMethods
             BlockType.LOG => new Texture(5f, 14f, 4f, 14f, 5f, 14f),
             BlockType.LEAVES => new Texture(4f, 12f, 4f, 12f, 4f, 12f),
             BlockType.LEAVES_SOLID => new Texture(5f, 12f, 5f, 12f, 5f, 12f),
-            BlockType.DIAMOND_ORE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
+            BlockType.COAL_ORE => new Texture(2f, 13f, 2f, 13f, 2f, 13f),
+            BlockType.IRON_ORE => new Texture(1f, 13f, 1f, 13f, 1f, 13f),
+            BlockType.GOLD_ORE => new Texture(0f, 13f, 0f, 13f, 0f, 13f),
+            BlockType.REDSTONE_ORE => new Texture(3f, 12f, 3f, 12f, 3f, 12f),
+            BlockType.DIAMOND_ORE => new Texture(2f, 12f, 2f, 12f, 2f, 12f),
             _ => new Texture(10f, 0f, 10f, 0f, 10f, 0f)
         };
     }
@@ -66,6 +70,10 @@ public static class BlockTypeMethods
             BlockType.LOG => true,
             BlockType.LEAVES => false,
             BlockType.LEAVES_SOLID => true,
+            BlockType.COAL_ORE => true,
+            BlockType.IRON_ORE => true,
+            BlockType.GOLD_ORE => true,
+            BlockType.REDSTONE_ORE => true,
             BlockType.DIAMOND_ORE => true,
             _ => true
         };

@@ -4,14 +4,31 @@ using UnityEngine;
 
 public class Utils : MonoBehaviour
 {
-    public static int GenerateHeight(float x, float z, float maxHeight, float smooth, int octaves, float persistence)
+    public static int Noise2D(float x, float z, FloorGenerationAttributes attributes)
     {
-        return (int)Map(0, maxHeight, 0, 1, FBM(x * smooth, z * smooth, octaves, persistence));
+        return (int)Map(attributes.minHeight, attributes.maxHeight, 0, 1, FBM(x * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence));
+    }
+
+    public static float Noise3D(float x, float y, float z, GenerationAttributes attributes)
+    {
+        return FBM3D(x * attributes.smoothness, y * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
     }
 
     static float Map(float newMin, float newMax, float originalMin, float originalMax, float value)
     {
         return Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(originalMin, originalMax, value));
+    }
+
+    static float FBM3D(float x, float y, float z, int octaves, float persistence)
+    {
+        float xy = FBM(x, y, octaves, persistence);
+        float yx = FBM(y, x, octaves, persistence);
+        float xz = FBM(x, z, octaves, persistence);
+        float zx = FBM(z, x, octaves, persistence);
+        float yz = FBM(y, z, octaves, persistence);
+        float zy = FBM(z, y, octaves, persistence);
+
+        return (xy + yx + xz + zx + yz + zy) / 6;
     }
 
     static float FBM(float x, float z, int octaves, float persistence)
@@ -22,11 +39,28 @@ public class Utils : MonoBehaviour
         float maxValue = 0;
         for (int i = 0; i < octaves; i++)
         {
-            total += Mathf.PerlinNoise(x * frequency, z * frequency) * amplitude;
+            total += Mathf.PerlinNoise((x + WorldGeneration.SEED) * frequency, (z + WorldGeneration.SEED) * frequency) * amplitude;
+            maxValue += amplitude;
             amplitude *= persistence;
             frequency *= 2;
-            maxValue += amplitude;
         }
         return total / maxValue;
+    }
+
+    float t;
+    public float smoothness = 0.5f;
+    public int octaves = 6;
+    public float persistence = 0.7f;
+
+    private void Start()
+    {
+        t = 0;
+    }
+
+    private void Update()
+    {
+        t += Time.deltaTime;
+        float  n = Noise3D(t, t * 2, t * 3, new GenerationAttributes(0.40f, smoothness, octaves, persistence));
+        Grapher.Log(n, "Noise 3D", Color.red);
     }
 }

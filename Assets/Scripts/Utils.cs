@@ -14,12 +14,7 @@ public class Utils : MonoBehaviour
     {
         return FBM3D(x * attributes.smoothness, y * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
     }
-    public static float BiomeProbability(float x, float z, GenerationAttributes attributes)
-    {
-        return FBM2D(x * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
-    }
-
-    public static float CactusProbability(float x, float z, GenerationAttributes attributes)
+    public static float Probability2D(float x, float z, GenerationAttributes attributes)
     {
         return FBM2D(x * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
     }

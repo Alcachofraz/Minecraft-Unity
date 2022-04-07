@@ -54,15 +54,15 @@ public class GenerationAttributes
 public static class BiomeMethods
 {
     public static int DIAMOND_MAX_HEIGHT = 16;
-    public static GenerationAttributes DIAMOND_ATTRIBUTES = new GenerationAttributes(0.38f, 0.12f, 6, 0.7f);
+    public static GenerationAttributes DIAMOND_ATTRIBUTES = new GenerationAttributes(0.38f, 0.13f, 6, 0.7f);
     public static int GOLD_MAX_HEIGHT = 32;
-    public static GenerationAttributes GOLD_ATTRIBUTES = new GenerationAttributes(0.38f, 0.12f, 6, 0.7f);
+    public static GenerationAttributes GOLD_ATTRIBUTES = new GenerationAttributes(0.38f, 0.13f, 6, 0.7f);
     public static int REDSTONE_MAX_HEIGHT = 16;
-    public static GenerationAttributes REDSTONE_ATTRIBUTES = new GenerationAttributes(0.38f, 0.12f, 6, 0.7f);
+    public static GenerationAttributes REDSTONE_ATTRIBUTES = new GenerationAttributes(0.38f, 0.13f, 6, 0.7f);
     public static int IRON_MAX_HEIGHT = 256;
-    public static GenerationAttributes IRON_ATTRIBUTES = new GenerationAttributes(0.38f, 0.12f, 6, 0.7f);
+    public static GenerationAttributes IRON_ATTRIBUTES = new GenerationAttributes(0.39f, 0.13f, 6, 0.7f);
     public static int COAL_MAX_HEIGHT = 256;
-    public static GenerationAttributes COAL_ATTRIBUTES = new GenerationAttributes(0.39f, 0.1f, 6, 0.7f);
+    public static GenerationAttributes COAL_ATTRIBUTES = new GenerationAttributes(0.39f, 0.13f, 6, 0.7f);
     public static int BEDROCK_MAX_HEIGHT = 2;
     public static GenerationAttributes BEDROCK_ATTRIBUTES = new GenerationAttributes(0.4f, 0.4f, 6, 0.7f);
 
@@ -121,7 +121,7 @@ public static class BiomeMethods
         {
             case Biome.PLAINS:
                 // Tree location
-                if (y > height && y < height + 6 && Utils.CactusProbability(x, z, new GenerationAttributes(0.10f, 0.9f, 1, 0.7f)) < 0.10f)
+                if (y > height && y < height + 6 && Utils.Probability2D(x, z, new GenerationAttributes(0.10f, 0.9f, 1, 0.7f)) < 0.10f)
                     return BlockType.LOG;
                 if (y < stoneHeight)
                 {
@@ -139,7 +139,7 @@ public static class BiomeMethods
                 return BlockType.AIR;
             case Biome.DESERT:
                 // Cactus location
-                if (y > height && y < height + Random.Range(2, 4) && Utils.CactusProbability(x, z, new GenerationAttributes(0.15f, 0.9f, 1, 0.7f)) < 0.15f)
+                if (y > height && y < height + Random.Range(2, 4) && Utils.Probability2D(x, z, new GenerationAttributes(0.15f, 0.9f, 1, 0.7f)) < 0.15f)
                     return BlockType.CACTUS;
                 if (y < stoneHeight)
                 {
@@ -167,7 +167,7 @@ public class WorldGeneration
 
     public static BlockType Get(int x, int y, int z)
     {
-        float biomeProbability = Utils.BiomeProbability(x, z, new GenerationAttributes(0.45f, 0.002f, 6, 0.7f));
+        float biomeProbability = Utils.Probability2D(x, z, new GenerationAttributes(0.45f, 0.002f, 6, 0.7f));
         Biome biome = (biomeProbability < 0.45f) ? Biome.PLAINS : Biome.DESERT;
         return biome.Generate(x, y, z);
     }

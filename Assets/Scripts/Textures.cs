@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum BlockType { 
-    AIR, GRASS, DIRT, STONE, SAND, BEDROCK, LOG, LEAVES, LEAVES_SOLID, IRON_ORE, COAL_ORE, GOLD_ORE, REDSTONE_ORE, DIAMOND_ORE
+    AIR, GRASS, DIRT, STONE, SAND, SANDSTONE, BEDROCK, LOG, LEAVES, LEAVES_SOLID, IRON_ORE, COAL_ORE, GOLD_ORE, REDSTONE_ORE, DIAMOND_ORE, CACTUS
 }
 
 public static class BlockTypeMethods
@@ -40,6 +40,7 @@ public static class BlockTypeMethods
             BlockType.DIRT => new Texture(2f, 15f, 2f, 15f, 2f, 15f),
             BlockType.STONE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
             BlockType.SAND => new Texture(2f, 14f, 2f, 14f, 2f, 14f),
+            BlockType.SANDSTONE => new Texture(0f, 4f, 0f, 3f, 0f, 2f),
             BlockType.BEDROCK => new Texture(1f, 14f, 1f, 14f, 1f, 14f),
             BlockType.LOG => new Texture(5f, 14f, 4f, 14f, 5f, 14f),
             BlockType.LEAVES => new Texture(4f, 12f, 4f, 12f, 4f, 12f),
@@ -49,6 +50,7 @@ public static class BlockTypeMethods
             BlockType.GOLD_ORE => new Texture(0f, 13f, 0f, 13f, 0f, 13f),
             BlockType.REDSTONE_ORE => new Texture(3f, 12f, 3f, 12f, 3f, 12f),
             BlockType.DIAMOND_ORE => new Texture(2f, 12f, 2f, 12f, 2f, 12f),
+            BlockType.CACTUS => new Texture(5f, 11f, 6f, 11f, 7f, 11f),
             _ => new Texture(10f, 0f, 10f, 0f, 10f, 0f)
         };
     }
@@ -66,6 +68,7 @@ public static class BlockTypeMethods
             BlockType.DIRT => true,
             BlockType.STONE => true,
             BlockType.SAND => true,
+            BlockType.SANDSTONE => true,
             BlockType.BEDROCK => true,
             BlockType.LOG => true,
             BlockType.LEAVES => false,
@@ -75,6 +78,7 @@ public static class BlockTypeMethods
             BlockType.GOLD_ORE => true,
             BlockType.REDSTONE_ORE => true,
             BlockType.DIAMOND_ORE => true,
+            BlockType.CACTUS => false,
             _ => true
         };
     }

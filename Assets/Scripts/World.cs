@@ -17,8 +17,6 @@ public class World : MonoBehaviour
     bool drawing = false;
     bool building = false;
 
-    public static Biome biome = Biome.PLAINS;
-
     public static string ChunkName(Vector3 chunk)
     {
         return (int)chunk.x + " " + (int)chunk.y + " " + (int)chunk.z;
@@ -109,7 +107,7 @@ public class World : MonoBehaviour
         StartCoroutine(BuildRecursiveWorld(chunkPosition, radius));
     }
 
-    Vector3 WhichChunk(Vector3 position)
+    public static Vector3 WhichChunk(Vector3 position)
     {
         Vector3 chunkPosition = new Vector3();
         chunkPosition.x = Mathf.Floor(position.x / chunkSize) * chunkSize;
@@ -128,7 +126,7 @@ public class World : MonoBehaviour
         Vector3 playerPosition = player.transform.position;
         player.transform.position = new Vector3(
             playerPosition.x,
-            Utils.Noise2D(playerPosition.x, playerPosition.z, Biome.PLAINS.GetFloorGenerationAttributes()) + 1,
+            Utils.PerlinNoise2D(playerPosition.x, playerPosition.z, Biome.PLAINS.GetFloorGenerationAttributes()) + 1,
             playerPosition.z
         );
         lastBuiltPosition = playerPosition;

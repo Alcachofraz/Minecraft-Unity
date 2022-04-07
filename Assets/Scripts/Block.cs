@@ -6,9 +6,9 @@ public enum CubeSide { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
 
 public class Block
 {
-    BlockType blockType;
-    Chunk owner;
-    Vector3 position;
+    public BlockType blockType;
+    public Chunk owner;
+    public Vector3 position;
 
     public Block(BlockType blockType, Vector3 position, Chunk parent, Material material)
     {

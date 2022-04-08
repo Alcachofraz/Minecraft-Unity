@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ChunkStatus { CREATED, BUILT, DRAWN }
+public enum ChunkStatus { CREATED, BUILDING, BUILT, DRAWING, DRAWN }
 
 public class Chunk
 {
@@ -15,15 +15,15 @@ public class Chunk
 
     public Chunk(string name, Vector3 position, Material material)
     {
-        status = ChunkStatus.BUILT;
         gameObject = new GameObject(name);
         gameObject.gameObject.transform.position = position;
         this.material = material;
-        Build();
+        status = ChunkStatus.CREATED;
     }
 
-    private void Build()
+    public IEnumerator Build()
     {
+        status = ChunkStatus.BUILDING;
         chunkData = new Block[World.chunkSize, World.chunkSize, World.chunkSize];
         for (int z = 0; z < World.chunkSize; z++)
         {
@@ -32,18 +32,22 @@ public class Chunk
                 for (int x = 0; x < World.chunkSize; x++)
                 {
                     Vector3 position = new Vector3(x, y, z);
-                    chunkData[x, y, z] = new Block(WorldGeneration.Get(
+                    (BlockType, Biome) generation = WorldGeneration.Get(
                         (int)gameObject.transform.position.x + x,
                         (int)gameObject.transform.position.y + y,
                         (int)gameObject.transform.position.z + z
-                    ), position, this, material);
+                    );
+
+                    chunkData[x, y, z] = new Block(generation.Item1, generation.Item2, position, this, material);
                 }
             }
+            yield return null;
         }
         status = ChunkStatus.BUILT;
     }
 
-    public void Draw() {
+    public IEnumerator Draw() {
+        status = ChunkStatus.DRAWING;
         for (int z = 0; z < World.chunkSize; z++)
         {
             for (int y = 0; y < World.chunkSize; y++)
@@ -53,6 +57,7 @@ public class Chunk
                     chunkData[x, y, z].Draw();
                 }
             }
+            yield return null;
         }
         CombineQuads();
         MeshCollider collider = gameObject.AddComponent<MeshCollider>();

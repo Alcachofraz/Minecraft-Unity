@@ -7,12 +7,14 @@ public enum CubeSide { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
 public class Block
 {
     public BlockType blockType;
+    public Biome biome;
     public Chunk owner;
     public Vector3 position;
 
-    public Block(BlockType blockType, Vector3 position, Chunk parent, Material material)
+    public Block(BlockType blockType, Biome biome, Vector3 position, Chunk parent, Material material)
     {
         this.blockType = blockType;
+        this.biome = biome;
         this.owner = parent;
         this.position = position;
     }
@@ -98,8 +100,9 @@ public class Block
                     (z - (int)position.z) *World.chunkSize
                 );
             string neighbourChunkName = World.ChunkName(neighbourChunkPosition);
+            //if (WorldTest.chunks.TryGetValue(neighbourChunkName, out Chunk neighbourChunk))
             if (World.chunks.TryGetValue(neighbourChunkName, out Chunk neighbourChunk))
-            {
+                {
                 chunkData = neighbourChunk.chunkData;
             }
             else

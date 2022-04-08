@@ -14,40 +14,28 @@ public class World : MonoBehaviour
     public static ConcurrentDictionary<string, Chunk> chunks;
     public static List<string> toRemove = new List<string>();
     Vector3 lastBuiltPosition;
-    bool drawing = false;
-    bool building = false;
 
     public static string ChunkName(Vector3 chunk)
     {
         return (int)chunk.x + " " + (int)chunk.y + " " + (int)chunk.z;
     }
 
-    IEnumerator BuildRecursiveWorld(Vector3 chunkPosition, int radius)
+    void BuildRecursiveWorld(Vector3 chunkPosition, int radius)
     {
-        building = true;
-
         int x = (int)chunkPosition.x;
         int y = (int)chunkPosition.y;
         int z = (int)chunkPosition.z;
 
         BuildChunkAt(chunkPosition);
-        yield return null;
 
-        if (--radius < 0) yield break;
+        if (--radius < 0) return;
 
-        StartBuilding(new Vector3(x, y, z + chunkSize), radius);
-        yield return null;
-        StartBuilding(new Vector3(x, y, z - chunkSize), radius);
-        yield return null;
-        StartBuilding(new Vector3(x + chunkSize, y, z), radius);
-        yield return null;
-        StartBuilding(new Vector3(x - chunkSize, y, z), radius);
-        yield return null;
-        StartBuilding(new Vector3(x, y + chunkSize, z), radius);
-        yield return null;
-        StartBuilding(new Vector3(x, y - chunkSize, z), radius);
-
-        building = false;
+        BuildRecursiveWorld(new Vector3(x, y, z + chunkSize), radius);
+        BuildRecursiveWorld(new Vector3(x, y, z - chunkSize), radius);
+        BuildRecursiveWorld(new Vector3(x + chunkSize, y, z), radius);
+        BuildRecursiveWorld(new Vector3(x - chunkSize, y, z), radius);
+        BuildRecursiveWorld(new Vector3(x, y + chunkSize, z), radius);
+        BuildRecursiveWorld(new Vector3(x, y - chunkSize, z), radius);
     }
 
     void BuildChunkAt(Vector3 position)
@@ -58,10 +46,11 @@ public class World : MonoBehaviour
             chunk = new Chunk(chunkName, position, material);
             chunk.gameObject.transform.parent = this.transform;
             chunks.TryAdd(chunk.gameObject.name, chunk);
+            StartCoroutine(chunk.Build());
         }
     }
 
-    IEnumerator RemoveChunks()
+    void RemoveChunks()
     {
         for (int i = 0; i < toRemove.Count; i++)
         {
@@ -70,41 +59,22 @@ public class World : MonoBehaviour
             {
                 Destroy(chunk.gameObject);
                 chunks.TryRemove(chunkName, out chunk);
-                yield return null;
             }
         }
     }
 
 
-    IEnumerator DrawChunks()
+    void DrawChunks()
     {
-        drawing = true;
         foreach (KeyValuePair<string, Chunk> chunk in chunks)
         {
             if (chunk.Value.status == ChunkStatus.BUILT)
             {
-                chunk.Value.Draw();
-                yield return null;
+                StartCoroutine(chunk.Value.Draw());
             }
-            //if (chunk.Value.gameObject && Vector3.Distance(player.transform.position, chunk.Value.gameObject.transform.position) > chunkSize * radius) toRemove.Add(chunk.Key);
+            if (chunk.Value.gameObject && Vector3.Distance(player.transform.position, chunk.Value.gameObject.transform.position) > chunkSize * radius) toRemove.Add(chunk.Key);
         }
-        //StartRemoving();
-        drawing = false;
-    }
-
-    void StartDrawing()
-    {
-        StartCoroutine(DrawChunks());
-    }
-
-    void StartRemoving()
-    {
-        StartCoroutine(RemoveChunks());
-    }
-
-    void StartBuilding(Vector3 chunkPosition, int radius)
-    {
-        StartCoroutine(BuildRecursiveWorld(chunkPosition, radius));
+        RemoveChunks();
     }
 
     public static Vector3 WhichChunk(Vector3 position)
@@ -126,12 +96,12 @@ public class World : MonoBehaviour
         Vector3 playerPosition = player.transform.position;
         player.transform.position = new Vector3(
             playerPosition.x,
-            Utils.PerlinNoise2D(playerPosition.x, playerPosition.z, Biome.PLAINS.GetFloorGenerationAttributes()) + 1,
+            140 + 1,
             playerPosition.z
         );
-        lastBuiltPosition = playerPosition;
-        StartBuilding(WhichChunk(lastBuiltPosition), radius);
-        StartDrawing();
+        lastBuiltPosition = player.transform.position;
+        BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
+        player.SetActive(true);
     }
 
     // Update is called once per frame
@@ -142,10 +112,9 @@ public class World : MonoBehaviour
         if (movement.magnitude > chunkSize)
         {
             lastBuiltPosition = playerPosition;
-            StartBuilding(WhichChunk(lastBuiltPosition), radius);
-            StartDrawing();
+            BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
+            RemoveChunks();
         }
-        if (!drawing) StartDrawing();
-        if (!building) player.SetActive(true);
+        DrawChunks();
     }
 }

@@ -66,7 +66,7 @@ public static class BiomeMethods
     public static int BEDROCK_MAX_HEIGHT = 2;
     public static GenerationAttributes BEDROCK_ATTRIBUTES = new GenerationAttributes(0.4f, 0.4f, 6, 0.7f);
 
-    public static GenerationAttributes caveGenerationAttributes = new GenerationAttributes(0.41f, 0.015f, 6, 0.7f);
+    public static GenerationAttributes caveGenerationAttributes = new GenerationAttributes(0.0f, 0.005f, 8, 0.5f);
 
     /// <summary>
     /// Get floor generation attributes.
@@ -78,7 +78,7 @@ public static class BiomeMethods
         {
             Biome.PLAINS => new FloorGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
             Biome.DESERT => new FloorGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
-            Biome.MOUNTAINS => new FloorGenerationAttributes(62, 90, 0.003f, 1, 2f),
+            Biome.MOUNTAINS => new FloorGenerationAttributes(62, 140, 0.003f, 12, 0.7f),
             _ => new FloorGenerationAttributes(0, 0, 0f, 0, 0f)
         };
     }
@@ -98,7 +98,7 @@ public static class BiomeMethods
         };
     }
 
-    public static BlockType Generate(this Biome b, float x, float y, float z)
+    public static BlockType GenerateBlockType(this Biome b, float x, float y, float z)
     {
         FloorGenerationAttributes floorAttributes = b.GetFloorGenerationAttributes();
         BlockLayout blockLayout = b.GetBlockLayout();
@@ -114,9 +114,8 @@ public static class BiomeMethods
         // Before cave generation, place Bedrock if due (bedrock has priority over any other block).
         if (y <= BEDROCK_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED * 1), y, z + (WorldGeneration.SEED * 1), BEDROCK_ATTRIBUTES) < BEDROCK_ATTRIBUTES.probability) return BlockType.BEDROCK;
         // Give continuity to Perlin generated 3D cave, if due.
-        if (caveProbability < caveGenerationAttributes.probability) return BlockType.AIR;
+        if (caveProbability > caveGenerationAttributes.probability - 0.005 && caveProbability < caveGenerationAttributes.probability) return BlockType.AIR;
         // Biome specific generation
-
         switch (b)
         {
             case Biome.PLAINS:
@@ -155,20 +154,40 @@ public static class BiomeMethods
                 if (y < height) return blockLayout.outerLayer;
                 if (y == height) return blockLayout.surfaceLayer;
                 return BlockType.AIR;
+            case Biome.MOUNTAINS:
+                // Tree location
+                if (y > height && y < height + 6 && Utils.Probability2D(x, z, new GenerationAttributes(0.10f, 0.9f, 1, 0.7f)) < 0.10f)
+                    return BlockType.LOG;
+                if (y < stoneHeight)
+                {
+                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
+                    if (y <= COAL_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
+                    if (y <= IRON_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
+                    if (y <= REDSTONE_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
+                    if (y <= GOLD_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
+                    if (y <= DIAMOND_MAX_HEIGHT && Utils.PerlinNoise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
+                    return blockLayout.innerLayer;
+                }
+
+                if (y < height) return blockLayout.outerLayer;
+                if (y == height) return blockLayout.surfaceLayer;
+                return BlockType.AIR;
             default:
                 return BlockType.AIR;
         }
+
+        
     }
 }
 
 public class WorldGeneration
 {
-    public static int SEED = 32000;
+    public static int SEED = 35000;
 
-    public static BlockType Get(int x, int y, int z)
+    public static (BlockType, Biome) Get(int x, int y, int z)
     {
         float biomeProbability = Utils.Probability2D(x, z, new GenerationAttributes(0.45f, 0.002f, 6, 0.7f));
-        Biome biome = (biomeProbability < 0.45f) ? Biome.PLAINS : Biome.DESERT;
-        return biome.Generate(x, y, z);
+        Biome biome = (biomeProbability < 0.45f) ? Biome.DESERT : Biome.PLAINS;
+        return (biome.GenerateBlockType(x, y, z), biome);
     }
 }

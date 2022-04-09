@@ -5,15 +5,14 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
-    public static int PLAINS_MAX_HEIGHT = 80;
-
     public GameObject player;
     public Material material;
     public static int chunkSize = 16;
-    public static int radius = 3;
+    public static int radius = 4;
     public static ConcurrentDictionary<string, Chunk> chunks;
-    public static List<string> toRemove = new List<string>();
     Vector3 lastBuiltPosition;
+    bool loaded = false;
+    int initialChunkNumber;
 
     public static string ChunkName(Vector3 chunk)
     {
@@ -52,13 +51,12 @@ public class World : MonoBehaviour
 
     void RemoveChunks()
     {
-        for (int i = 0; i < toRemove.Count; i++)
+        foreach (KeyValuePair<string, Chunk> chunk in chunks)
         {
-            string chunkName = toRemove[i];
-            if (chunks.TryGetValue(chunkName, out Chunk chunk))
+            if (chunk.Value.status == ChunkStatus.TO_REMOVE)
             {
-                Destroy(chunk.gameObject);
-                chunks.TryRemove(chunkName, out chunk);
+                Destroy(chunk.Value.gameObject);
+                chunks.TryRemove(chunk.Key, out _);
             }
         }
     }
@@ -72,9 +70,11 @@ public class World : MonoBehaviour
             {
                 StartCoroutine(chunk.Value.Draw());
             }
-            if (chunk.Value.gameObject && Vector3.Distance(player.transform.position, chunk.Value.gameObject.transform.position) > chunkSize * radius) toRemove.Add(chunk.Key);
+            else if (chunk.Value.gameObject && Vector3.Distance(player.transform.position, chunk.Value.gameObject.transform.position) > chunkSize * radius)
+            {
+                chunk.Value.status = ChunkStatus.TO_REMOVE;
+            }
         }
-        RemoveChunks();
     }
 
     public static Vector3 WhichChunk(Vector3 position)
@@ -86,6 +86,29 @@ public class World : MonoBehaviour
         return chunkPosition;
     }
 
+    public static int CalculateInitialChunkNumber(int radius)
+    {
+        int ret = 1 + radius * 4;
+        for (int i = 1; i <= radius + 1; i++)
+        {
+            ret += 2 * (i - 1);
+        }
+        return ret;
+    }
+
+    public static int CountDrawnChunks(int radius)
+    {
+        int drawn = 0;
+        foreach (KeyValuePair<string, Chunk> chunk in chunks)
+        {
+            if (chunk.Value.status == ChunkStatus.DRAWN)
+            {
+                drawn++;
+            }
+        }
+        return drawn;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -95,13 +118,13 @@ public class World : MonoBehaviour
 
         Vector3 playerPosition = player.transform.position;
         player.transform.position = new Vector3(
-            playerPosition.x,
-            140 + 1,
-            playerPosition.z
+            playerPosition.x + chunkSize / 2,
+            WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z),
+            playerPosition.z + chunkSize / 2
         );
         lastBuiltPosition = player.transform.position;
         BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
-        player.SetActive(true);
+        initialChunkNumber = CalculateInitialChunkNumber(radius);
     }
 
     // Update is called once per frame
@@ -113,8 +136,13 @@ public class World : MonoBehaviour
         {
             lastBuiltPosition = playerPosition;
             BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
-            RemoveChunks();
         }
         DrawChunks();
+        RemoveChunks();
+        if (CountDrawnChunks(radius) >= initialChunkNumber && !loaded) // Check if initial chunks have been drawn
+        {
+            player.SetActive(true);
+            loaded = true;
+        }
     }
 }

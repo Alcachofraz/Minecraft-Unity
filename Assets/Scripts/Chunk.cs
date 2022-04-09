@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ChunkStatus { CREATED, BUILDING, BUILT, DRAWING, DRAWN }
+public enum ChunkStatus { CREATED, BUILDING, BUILT, DRAWING, DRAWN, TO_REMOVE, REMOVING, REMOVED }
 
 public class Chunk
 {

@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Utils : MonoBehaviour
 {
-    public static int PerlinNoise2D(float x, float z, FloorGenerationAttributes attributes)
+    public static int PerlinNoise2D(float x, float z, TerrainGenerationAttributes attributes)
     {
         return (int)Map(attributes.minHeight, attributes.maxHeight, 0, 1, FBM(x * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence));
     }

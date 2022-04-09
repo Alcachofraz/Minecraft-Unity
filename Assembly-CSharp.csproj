@@ -68,24 +68,25 @@
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\FirstPersonAudio.cs" />
     <Compile Include="Assets\Grapher\Grapher.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\FirstPersonLook.cs" />
+    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCMobileInputs.cs" />
     <Compile Include="Assets\Grapher\Example\DataProvider.cs" />
     <Compile Include="Assets\Scripts\WorldTest.cs" />
+    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCButtons.cs" />
     <Compile Include="Assets\Scripts\WorldGeneration.cs" />
     <Compile Include="Assets\Grapher\SettingsWindow.cs" />
     <Compile Include="Assets\Grapher\GraphSettings.cs" />
     <Compile Include="Assets\Grapher\Grapher.Replay.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\Crouch.cs" />
+    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCJoystick.cs" />
     <Compile Include="Assets\Grapher\TimeKeeper.cs" />
     <Compile Include="Assets\Scripts\Block.cs" />
     <Compile Include="Assets\Scripts\Chunk.cs" />
     <Compile Include="Assets\Grapher\OpenInFileBrowser.cs" />
     <Compile Include="Assets\Scripts\Utils.cs" />
-    <Compile Include="Assets\Mini First Person Controller\Scripts\Components\GroundCheck.cs" />
-    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCMobileInputs.cs" />
-    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCJoystick.cs" />
     <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Example\VehicleControllerMSACC.cs" />
-    <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MobileSystems\MSACCButtons.cs" />
     <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MSCameraController.cs" />
+    <Compile Include="Assets\Mini First Person Controller\Scripts\Components\GroundCheck.cs" />
+    <Compile Include="Assets\Scripts\Biomes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Grapher\IMPORTANT_README!.txt" />

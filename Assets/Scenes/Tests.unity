@@ -152,9 +152,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e16c4bff71801747b49f9b113ae4cdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smoothness: 0.5
-  octaves: 6
-  persistence: 0.7
+  plainsMinHeight: 60
+  plainsMaxHeight: 80
+  plainsSmoothness: 0.2
+  plainsOctaves: 2
+  plainsPersistence: 0.7
+  mountainsMinHeight: 70
+  mountainsMaxHeight: 120
+  mountainsSmoothness: 0.5
+  mountainsOctaves: 4
+  mountainsPersistence: 0.7
+  strengthMinHeight: 60
+  strengthMaxHeight: 140
+  strengthSmoothness: 0.05
+  strengthOctaves: 1
+  strengthPersistence: 0.7
 --- !u!4 &284833839
 Transform:
   m_ObjectHideFlags: 0
@@ -452,7 +464,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773623360729482, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_RootOrder
@@ -536,7 +548,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2021762355
 MonoBehaviour:
   m_ObjectHideFlags: 0

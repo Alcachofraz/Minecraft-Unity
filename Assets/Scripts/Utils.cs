@@ -63,9 +63,21 @@ public class Utils : MonoBehaviour
     }
 
     float t;
-    public float smoothness = 0.5f;
-    public int octaves = 6;
-    public float persistence = 0.7f;
+    public int plainsMinHeight = 60;
+    public int plainsMaxHeight = 80;
+    public float plainsSmoothness = 0.2f;
+    public int plainsOctaves = 2;
+    public float plainsPersistence = 0.7f;
+    public int mountainsMinHeight = 70;
+    public int mountainsMaxHeight = 120;
+    public float mountainsSmoothness = 0.5f;
+    public int mountainsOctaves = 4;
+    public float mountainsPersistence = 0.7f;
+    public int strengthMinHeight = 60;
+    public int strengthMaxHeight = 140;
+    public float strengthSmoothness = 0.05f;
+    public int strengthOctaves = 1;
+    public float strengthPersistence = 0.7f;
 
     private void Start()
     {
@@ -75,7 +87,58 @@ public class Utils : MonoBehaviour
     private void Update()
     {
         t += Time.deltaTime;
-        float n = PerlinNoise3D(t, t * 2, t * 3, new GenerationAttributes(0.045f, 0.02f, 6, 0.7f));
-        Grapher.Log(n, "Noise 3D", Color.red);
+        float p = PerlinNoise2D(t, 1, new TerrainGenerationAttributes(plainsMinHeight, plainsMaxHeight, plainsSmoothness, plainsOctaves, plainsPersistence));
+        float m = PerlinNoise2D(t, 1, new TerrainGenerationAttributes(mountainsMinHeight, mountainsMaxHeight, mountainsSmoothness, mountainsOctaves, mountainsPersistence));
+        float s = FBM(t * strengthSmoothness, 1, strengthOctaves, strengthPersistence); 
+        float h;
+        float b = FBM(t * 0.2f, 1, strengthOctaves, strengthPersistence);
+        if (b < 0.4)
+        {
+            h = p * s;
+        }
+        else if (b > 0.6)
+        {
+            h =  ConvertRange(plainsMinHeight, plainsMaxHeight, mountainsMinHeight, mountainsMaxHeight, p);
+        }
+        else
+        {
+            h = (p * s) + (m + s);
+        }
+        h /= 10;
+        Grapher.Log(p, "Plains", Color.green);
+        Grapher.Log(m, "Mountains", Color.black);
+        Grapher.Log(s, "Strength", Color.magenta);
+        Grapher.Log(b, "Which Biome", Color.blue);
+        Grapher.Log(h, "Height", Color.red);
+    }
+
+    /// <summary>
+    /// Converts the range.
+    /// </summary>
+    /// <param name="originalStart">The original start.</param>
+    /// <param name="originalEnd">The original end.</param>
+    /// <param name="newStart">The new start.</param>
+    /// <param name="newEnd">The new end.</param>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
+    public static float ConvertRange(
+        float originalStart, float originalEnd, // original range
+        float newStart, float newEnd, // desired range
+        float value) // value to convert
+    {
+        float scale = (newEnd - newStart) / (originalEnd - originalStart);
+        return (newStart + ((value - originalStart) * scale));
+    }
+    /// <summary>
+    /// Gets the bounded noise.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="meanHeight">Height of the mean.</param>
+    /// <param name="amplitude">The amplitude.</param>
+    /// <returns></returns>
+    // [InRange(-.5f, .5f)] && [InRange(0, 1)]
+    public static float GetBoundedNoise(float value, float meanHeight, float amplitude)
+    {
+        return Mathf.Clamp01(ConvertRange(0, 1, -amplitude, amplitude, ConvertRange(-1, 1, 0, 1, value)) + (meanHeight + .5f));
     }
 }

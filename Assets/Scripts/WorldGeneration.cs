@@ -40,14 +40,14 @@ public class WorldGeneration
     public static (BlockType, Biome) Get(int x, int y, int z)
     {
         float biomeProbability = Utils.Probability2D(x, z, biomeGenerationAttributes);
-        Biome biome = (biomeProbability < 0.45f) ? Biome.DESERT : Biome.PLAINS;
+        Biome biome = (biomeProbability < 0.45f) ? Biome.MOUNTAINS : Biome.PLAINS;
         return (biome.GenerateBlockType(x, y, z), biome);
     }
 
     public static int GetSpawnHeight(int x, int z)
     {
         float biomeProbability = Utils.Probability2D(x, z, new GenerationAttributes(0.45f, 0.002f, 6, 0.7f));
-        Biome b = (biomeProbability < 0.45f) ? Biome.DESERT : Biome.PLAINS;
+        Biome b = (biomeProbability < 0.45f) ? Biome.MOUNTAINS : Biome.PLAINS;
         TerrainGenerationAttributes floorAttributes = b.GetFloorGenerationAttributes();
         return Utils.PerlinNoise2D(x, z, floorAttributes);
     }

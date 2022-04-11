@@ -32,13 +32,19 @@ public class Chunk
                 for (int x = 0; x < World.chunkSize; x++)
                 {
                     Vector3 position = new Vector3(x, y, z);
-                    (BlockType, Biome) generation = WorldGeneration.Get(
-                        (int)gameObject.transform.position.x + x,
-                        (int)gameObject.transform.position.y + y,
-                        (int)gameObject.transform.position.z + z
-                    );
-
-                    chunkData[x, y, z] = new Block(generation.Item1, generation.Item2, position, this, material);
+                    try
+                    {
+                        (BlockType, Biome) generation = WorldGeneration.Get(
+                            (int)gameObject.transform.position.x + x,
+                            (int)gameObject.transform.position.y + y,
+                            (int)gameObject.transform.position.z + z
+                        );
+                        chunkData[x, y, z] = new Block(generation.Item1, generation.Item2, position, this, material);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                 }
             }
             yield return null;
@@ -46,7 +52,8 @@ public class Chunk
         status = ChunkStatus.BUILT;
     }
 
-    public IEnumerator Draw() {
+    public IEnumerator Draw() 
+    {
         status = ChunkStatus.DRAWING;
         for (int z = 0; z < World.chunkSize; z++)
         {
@@ -54,14 +61,30 @@ public class Chunk
             {
                 for (int x = 0; x < World.chunkSize; x++)
                 {
-                    chunkData[x, y, z].Draw();
+                    try
+                    {
+                        chunkData[x, y, z].Draw();
+                    }
+                    catch
+                    {
+                        status = ChunkStatus.REMOVED;
+                        yield break;
+                    }
                 }
             }
             yield return null;
         }
-        CombineQuads();
-        MeshCollider collider = gameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
+        MeshCollider collider;
+        try
+        {
+            CombineQuads();
+            collider = gameObject.AddComponent<MeshCollider>();
+            collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
+        }
+        catch {
+            status = ChunkStatus.REMOVED;
+            yield break;
+        }
 
         // Remove friction from mesh collider
         collider.material.staticFriction = 0;
@@ -73,7 +96,13 @@ public class Chunk
         status = ChunkStatus.DRAWN;
     }
 
-    private void CombineQuads()
+    public void Remove()
+    {
+        Object.Destroy(gameObject);
+        status = ChunkStatus.REMOVED;
+    }
+
+    private void CombineQuads() 
     {
         MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];

@@ -25,6 +25,7 @@ public class World : MonoBehaviour
         int y = (int)chunkPosition.y;
         int z = (int)chunkPosition.z;
 
+        // Build if not built already
         BuildChunkAt(chunkPosition);
 
         if (--radius < 0) return;
@@ -40,10 +41,11 @@ public class World : MonoBehaviour
     void BuildChunkAt(Vector3 position)
     {
         string chunkName = ChunkName(position);
+        // If chunk doesn't already exist:
         if (!chunks.TryGetValue(chunkName, out Chunk chunk))
         {
             chunk = new Chunk(chunkName, position, material);
-            chunk.gameObject.transform.parent = this.transform;
+            //chunk.gameObject.transform.parent = transform;
             chunks.TryAdd(chunk.gameObject.name, chunk);
             StartCoroutine(chunk.Build());
         }
@@ -53,9 +55,10 @@ public class World : MonoBehaviour
     {
         foreach (KeyValuePair<string, Chunk> chunk in chunks)
         {
+            // If chunk should be removed:
             if (chunk.Value.status == ChunkStatus.TO_REMOVE)
             {
-                Destroy(chunk.Value.gameObject);
+                chunk.Value.Remove();
                 chunks.TryRemove(chunk.Key, out _);
             }
         }
@@ -66,10 +69,12 @@ public class World : MonoBehaviour
     {
         foreach (KeyValuePair<string, Chunk> chunk in chunks)
         {
+            // If built but not drawn:
             if (chunk.Value.status == ChunkStatus.BUILT)
             {
                 StartCoroutine(chunk.Value.Draw());
             }
+            // If far away from player:
             else if (chunk.Value.gameObject && Vector3.Distance(player.transform.position, chunk.Value.gameObject.transform.position) > chunkSize * radius)
             {
                 chunk.Value.status = ChunkStatus.TO_REMOVE;

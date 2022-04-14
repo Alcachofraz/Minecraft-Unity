@@ -52,7 +52,7 @@ public class Chunk
         status = ChunkStatus.BUILT;
     }
 
-    public IEnumerator Draw() 
+    public IEnumerator Draw()
     {
         status = ChunkStatus.DRAWING;
         for (int z = 0; z < World.chunkSize; z++)
@@ -81,7 +81,8 @@ public class Chunk
             collider = gameObject.AddComponent<MeshCollider>();
             collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
         }
-        catch {
+        catch
+        {
             status = ChunkStatus.REMOVED;
             yield break;
         }
@@ -102,7 +103,7 @@ public class Chunk
         status = ChunkStatus.REMOVED;
     }
 
-    private void CombineQuads() 
+    private void CombineQuads()
     {
         MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];

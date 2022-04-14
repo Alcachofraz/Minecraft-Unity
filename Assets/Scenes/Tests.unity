@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &284833838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,11 +162,9 @@ MonoBehaviour:
   mountainsSmoothness: 0.5
   mountainsOctaves: 4
   mountainsPersistence: 0.7
-  strengthMinHeight: 60
-  strengthMaxHeight: 140
-  strengthSmoothness: 0.05
-  strengthOctaves: 1
-  strengthPersistence: 0.7
+  biomeSmoothness: 0.7
+  biomeOctaves: 1
+  biomePersistence: 0.7
 --- !u!4 &284833839
 Transform:
   m_ObjectHideFlags: 0
@@ -464,7 +462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1773623360729482, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_RootOrder
@@ -548,7 +546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2021762355
 MonoBehaviour:
   m_ObjectHideFlags: 0

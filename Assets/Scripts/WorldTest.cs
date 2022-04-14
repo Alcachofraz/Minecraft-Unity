@@ -51,8 +51,8 @@ public class WorldTest : MonoBehaviour
         }
         foreach (KeyValuePair<string, Chunk> chunk in chunks)
         {
-                chunk.Value.Draw();
-                yield return null;
+            chunk.Value.Draw();
+            yield return null;
         }
     }
 
@@ -86,7 +86,8 @@ public class WorldTest : MonoBehaviour
         Vector3 playerPosition = player.transform.position;
         player.transform.position = new Vector3(
             playerPosition.x,
-            Utils.PerlinNoise2D(playerPosition.x, playerPosition.z, Biome.PLAINS.GetFloorGenerationAttributes()) + 1,
+            100,
+            //Utils.TerrainHeightGenerate(playerPosition.x, playerPosition.z, Biome.PLAINS.GetFloorGenerationAttributes()) + 1,
             playerPosition.z
         );
         StartCoroutine(BuildChunkCube());

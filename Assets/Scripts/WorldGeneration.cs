@@ -35,20 +35,15 @@ public class WorldGeneration
     public static int SEED = 35000;
 
     public static GenerationAttributes caveGenerationAttributes = new GenerationAttributes(0.0f, 0.005f, 8, 0.5f);
-    public static GenerationAttributes biomeGenerationAttributes = new GenerationAttributes(0.45f, 0.002f, 6, 0.7f);
 
     public static (BlockType, Biome) Get(int x, int y, int z)
     {
-        float biomeProbability = Utils.Probability2D(x, z, biomeGenerationAttributes);
-        Biome biome = (biomeProbability < 0.45f) ? Biome.MOUNTAINS : Biome.PLAINS;
-        return (biome.GenerateBlockType(x, y, z), biome);
+        BiomeGenerationInfo info = Utils.WhichBiome(x, z);
+        return (info.biome.GenerateBlockType(x, y, z, Utils.TerrainHeight(x, z, info)), info.biome);
     }
 
     public static int GetSpawnHeight(int x, int z)
     {
-        float biomeProbability = Utils.Probability2D(x, z, new GenerationAttributes(0.45f, 0.002f, 6, 0.7f));
-        Biome b = (biomeProbability < 0.45f) ? Biome.MOUNTAINS : Biome.PLAINS;
-        TerrainGenerationAttributes floorAttributes = b.GetFloorGenerationAttributes();
-        return Utils.PerlinNoise2D(x, z, floorAttributes);
+        return Utils.TerrainHeight(x, z, Utils.WhichBiome(x, z));
     }
 }

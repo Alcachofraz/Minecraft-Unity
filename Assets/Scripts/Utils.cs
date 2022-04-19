@@ -17,7 +17,7 @@ public class Utils : MonoBehaviour
         }
         else
         {
-            return (int)(TerrainHeightOfBiome(x, z, info.bottomBiome) * info.strength + TerrainHeightOfBiome(x, z, info.bottomBiome) * (1 - info.strength));
+            return (int)(TerrainHeightOfBiome(x, z, info.topBiome) * info.strength + TerrainHeightOfBiome(x, z, info.bottomBiome) * (1 - info.strength));
         }
     }
 
@@ -29,6 +29,14 @@ public class Utils : MonoBehaviour
     public static float Noise3D(float x, float y, float z, GenerationAttributes attributes)
     {
         return FBM3D(x * attributes.smoothness, y * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
+    }
+
+    public static float Precipitation(float x, float y) {
+        FBM(x * biomeGenerationAttributes.smoothness, z * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
+    }
+
+    public static float Temperature(float x, float y) {
+        FBM((x + WorldGeneration.SEED) * biomeGenerationAttributes.smoothness, (z + WorldGeneration.SEED) * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
     }
 
     public static BiomeGenerationInfo WhichBiome(float x, float z)

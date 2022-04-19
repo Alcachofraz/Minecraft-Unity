@@ -127,6 +127,7 @@ public class World : MonoBehaviour
             WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z),
             playerPosition.z + chunkSize / 2
         );
+        Debug.Log(WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z));
         lastBuiltPosition = player.transform.position;
         BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
         initialChunkNumber = CalculateInitialChunkNumber(radius);

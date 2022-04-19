@@ -55,6 +55,9 @@ public static class BiomeMethods
         };
     }
 
+    /// <summary>
+    /// Generate block, according to floor height and block coordinate.
+    /// </summary>
     public static BlockType GenerateBlockType(this Biome b, float x, float y, float z, int height)
     {
         int stoneHeight = height - 3;
@@ -126,7 +129,5 @@ public static class BiomeMethods
             default:
                 return BlockType.AIR;
         }
-
-
     }
 }

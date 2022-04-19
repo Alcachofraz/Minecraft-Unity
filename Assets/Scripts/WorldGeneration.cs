@@ -44,6 +44,12 @@ public class WorldGeneration
 
     public static int GetSpawnHeight(int x, int z)
     {
-        return Utils.TerrainHeight(x, z, Utils.WhichBiome(x, z));
+        return Utils.TerrainHeight(x, z, Utils.WhichBiome(x, z)) + 2;
+    }
+
+    public static Biome WhichBiome(int x, int z) {
+        float precipitation = Utils.Precipitation(x, z);
+        float temperature = Utils.Temperature(x, z);
+        
     }
 }

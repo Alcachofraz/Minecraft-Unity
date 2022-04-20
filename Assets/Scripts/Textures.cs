@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BlockType { 
-    AIR, GRASS, DIRT, STONE, SAND, SANDSTONE, BEDROCK, LOG, LEAVES, LEAVES_SOLID, IRON_ORE, COAL_ORE, GOLD_ORE, REDSTONE_ORE, DIAMOND_ORE, CACTUS
+public enum BlockType
+{
+    AIR, GRASS, SNOW, DIRT, STONE, SAND, SANDSTONE, BEDROCK, LOG, LEAVES, LEAVES_SOLID, IRON_ORE, COAL_ORE, GOLD_ORE, REDSTONE_ORE, DIAMOND_ORE, CACTUS
 }
 
 public static class BlockTypeMethods
@@ -37,6 +38,7 @@ public static class BlockTypeMethods
         {
             BlockType.AIR => new Texture(10f, 0f, 10f, 0f, 10f, 0f),
             BlockType.GRASS => new Texture(0f, 15f, 3f, 15f, 2f, 15f),
+            BlockType.SNOW => new Texture(2f, 11f, 4f, 11f, 2f, 15f),
             BlockType.DIRT => new Texture(2f, 15f, 2f, 15f, 2f, 15f),
             BlockType.STONE => new Texture(1f, 15f, 1f, 15f, 1f, 15f),
             BlockType.SAND => new Texture(2f, 14f, 2f, 14f, 2f, 14f),
@@ -112,7 +114,7 @@ public class Texture
     /// </summary>
     private Vector2[] TranslateUV(Vector2 uv00)
     {
-        return new Vector2[]{ uv00 + new Vector2(1f, 1f) / 16, uv00 + new Vector2(0f, 1f) / 16, uv00, uv00 + new Vector2(1f, 0f) / 16 };
+        return new Vector2[] { uv00 + new Vector2(1f, 1f) / 16, uv00 + new Vector2(0f, 1f) / 16, uv00, uv00 + new Vector2(1f, 0f) / 16 };
     }
 
     /// <summary>

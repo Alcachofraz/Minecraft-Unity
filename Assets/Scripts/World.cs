@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
@@ -63,8 +64,6 @@ public class World : MonoBehaviour
             }
         }
     }
-
-
     void DrawChunks()
     {
         foreach (KeyValuePair<string, Chunk> chunk in chunks)
@@ -127,7 +126,6 @@ public class World : MonoBehaviour
             WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z),
             playerPosition.z + chunkSize / 2
         );
-        Debug.Log(WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z));
         lastBuiltPosition = player.transform.position;
         BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);
         initialChunkNumber = CalculateInitialChunkNumber(radius);

@@ -32,24 +32,74 @@ public class GenerationAttributes
 
 public class WorldGeneration
 {
-    public static int SEED = 35000;
-
-    public static GenerationAttributes caveGenerationAttributes = new GenerationAttributes(0.0f, 0.005f, 8, 0.5f);
+    public static int SEED = 32000;
 
     public static (BlockType, Biome) Get(int x, int y, int z)
     {
-        BiomeGenerationInfo info = Utils.WhichBiome(x, z);
+        BiomeGenerationInfo info = WhichBiome(x, z);
         return (info.biome.GenerateBlockType(x, y, z, Utils.TerrainHeight(x, z, info)), info.biome);
     }
 
     public static int GetSpawnHeight(int x, int z)
     {
-        return Utils.TerrainHeight(x, z, Utils.WhichBiome(x, z)) + 2;
+        return Utils.TerrainHeight(x, z, WhichBiome(x, z)) + 2;
     }
 
-    public static Biome WhichBiome(int x, int z) {
-        float precipitation = Utils.Precipitation(x, z);
-        float temperature = Utils.Temperature(x, z);
-        
+    public static int CompareBiomes(Biome b1, Biome b2)
+    {
+        return (int)(b1.GetScaleLimits().min * 100f) - (int)(b2.GetScaleLimits().min * 100f);
+    }
+
+    public static BiomeGenerationInfo WhichBiome(int x, int z)
+    {
+        float biomeRate = Utils.BiomeRate(x, z);
+        Biome biome = Biome.PLAINS;
+        Biome topBiome = Biome.PLAINS;
+        Biome bottomBiome = Biome.PLAINS;
+        float strength = 1.0f;
+
+        Biome[] biomes = (Biome[])System.Enum.GetValues(typeof(Biome));
+
+        System.Array.Sort(biomes, CompareBiomes);
+
+        for (int i = 0; i < biomes.Length; i++)
+        {
+            if (biomeRate < biomes[i].GetScaleLimits().max && biomeRate > biomes[i].GetScaleLimits().min)
+            {
+                biome = biomes[i];
+                if (biomeRate > biomes[i].GetScaleLimits().max - 0.05)
+                {
+                    if (i == biomes.Length)
+                    {
+                        strength = 1.0f;
+                        topBiome = biome;
+                        bottomBiome = biome;
+                    }
+                    else
+                    {
+                        strength = (biomeRate - (biomes[i].GetScaleLimits().max - 0.05f)) * 10f;
+                        topBiome = biomes[i + 1];
+                        bottomBiome = biome;
+                    }
+                }
+                else if (biomeRate < biomes[i].GetScaleLimits().min + 0.05)
+                {
+                    if (i == 0)
+                    {
+                        strength = 1.0f;
+                        topBiome = biome;
+                        bottomBiome = biome;
+                    }
+                    else
+                    {
+                        strength = (biomeRate - (biomes[i].GetScaleLimits().min - 0.05f)) * 10f;
+                        topBiome = biome;
+                        bottomBiome = biomes[i - 1];
+                    }
+                }
+            }
+        }
+
+        return new BiomeGenerationInfo(biome, bottomBiome, topBiome, strength);
     }
 }

@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{407843d9-7d43-39ea-4d8d-5871f8a91268}</ProjectGuid>
+    <ProjectGuid>{8f55846d-23d6-b40c-722b-fc6d96bdfc85}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -66,7 +66,7 @@
      <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Example\VehicleControllerMSACC.cs" />
      <Compile Include="Assets\Marcos Schultz\MSAdvancedCameraController\Scripts\MSCameraController.cs" />
      <Compile Include="Assets\Mini First Person Controller\Scripts\Components\GroundCheck.cs" />
-     <Compile Include="Assets\Scripts\BiomeRates.cs" />
+     <Compile Include="Assets\Scripts\UI.cs" />
      <None Include="Assets\Grapher\IMPORTANT_README!.txt" />
      <None Include="Assets\Marcos Schultz\MSAdvancedCameraController\UpdateNotes.txt" />
     <Reference Include="UnityEngine">
@@ -636,38 +636,48 @@
     <Reference Include="System.Xml.Serialization">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.31f1\Editor\Data\NetStandard\compat\2.0.0\shims\netfx\System.Xml.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-        <HintPath>C:\Users\Pedro\Desktop\Projetos\Unity\Minecraft-Unity\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Unity.VSCode.Editor.csproj">
+      <Project>{57c90396-c1fc-3836-e42a-d019299d41aa}</Project>
+      <Name>Unity.VSCode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.Editor.csproj">
+      <Project>{a8cf6fca-87d5-e3c1-5c03-3b5ae5592c92}</Project>
+      <Name>Unity.TextMeshPro.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.VisualStudio.Editor.csproj">
+      <Project>{703952e3-badc-8ecf-8b2e-a676bc794846}</Project>
+      <Name>Unity.VisualStudio.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.Editor.csproj">
+      <Project>{4dcfadac-922f-7308-1490-66a6d06a20e9}</Project>
+      <Name>Unity.Timeline.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Timeline.csproj">
+      <Project>{c7e144bf-8695-1a3d-b2fc-a3a20e925eab}</Project>
+      <Name>Unity.Timeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.TextMeshPro.csproj">
+      <Project>{59fabdd2-bba7-b213-833b-8226830ec231}</Project>
+      <Name>Unity.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{bb3187f1-1632-56a5-d93b-20f4427d6342}</Project>
+      <Name>UnityEditor.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.PlasticSCM.Editor.csproj">
+      <Project>{186e6e86-f7af-ddf5-a237-73300b3f0ac5}</Project>
+      <Name>Unity.PlasticSCM.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Rider.Editor.csproj">
+      <Project>{f3190bcb-8b9f-b839-07e0-ec2169e354a7}</Project>
+      <Name>Unity.Rider.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{803f0c48-2458-ae49-9fef-8f62d0b23c5b}</Project>
+      <Name>UnityEngine.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -25,10 +25,22 @@ public class BiomeGenerationInfo
     }
 }
 
+public class ScaleLimits
+{
+    public float min;
+    public float max;
+
+    public ScaleLimits(float min, float max)
+    {
+        this.min = min;
+        this.max = max;
+    }
+}
+
 public static class BiomeMethods
 {
     public static int DIAMOND_MAX_HEIGHT = 16;
-    public static GenerationAttributes DIAMOND_ATTRIBUTES = new GenerationAttributes(0.38f, 0.13f, 6, 0.7f);
+    public static GenerationAttributes DIAMOND_ATTRIBUTES = new GenerationAttributes(0.4f, 0.13f, 12, 0.7f);
     public static int GOLD_MAX_HEIGHT = 32;
     public static GenerationAttributes GOLD_ATTRIBUTES = new GenerationAttributes(0.38f, 0.13f, 6, 0.7f);
     public static int REDSTONE_MAX_HEIGHT = 16;
@@ -45,13 +57,40 @@ public static class BiomeMethods
     /// </summary>
     public static TerrainGenerationAttributes GetFloorGenerationAttributes(this Biome b)
     {
-        //return BlockInfo(b).Item1;
         return b switch
         {
             Biome.PLAINS => new TerrainGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
             Biome.DESERT => new TerrainGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
-            Biome.MOUNTAINS => new TerrainGenerationAttributes(62, 140, 0.003f, 12, 0.7f),
+            Biome.MOUNTAINS => new TerrainGenerationAttributes(62, 130, 0.01f, 1, 0.7f),
             _ => new TerrainGenerationAttributes(0, 0, 0f, 0, 0f)
+        };
+    }
+
+    /// <summary>
+    /// Get scale limits for biome rate.
+    /// </summary>
+    public static ScaleLimits GetScaleLimits(this Biome b)
+    {
+        return b switch
+        {
+            Biome.PLAINS => new ScaleLimits(0.4f, 0.6f),
+            Biome.DESERT => new ScaleLimits(0.6f, 1.0f),
+            Biome.MOUNTAINS => new ScaleLimits(0.0f, 0.4f),
+            _ => new ScaleLimits(0.0f, 0.0f)
+        };
+    }
+
+    /// <summary>
+    /// Get floor generation attributes.
+    /// </summary>
+    public static string ToString(this Biome b)
+    {
+        return b switch
+        {
+            Biome.PLAINS => "Plains",
+            Biome.DESERT => "Desert",
+            Biome.MOUNTAINS => "Mountains",
+            _ => "None"
         };
     }
 
@@ -60,15 +99,14 @@ public static class BiomeMethods
     /// </summary>
     public static BlockType GenerateBlockType(this Biome b, float x, float y, float z, int height)
     {
-        int stoneHeight = height - 3;
-        float caveProbability = Utils.Noise3D(x, y, z, WorldGeneration.caveGenerationAttributes);
+        int stoneHeight = height - 2;
 
         // Level 0 -> Bedrock
         if (y < 1) return BlockType.BEDROCK;
         // Before cave generation, place Bedrock if due (bedrock has priority over any other block).
         if (y <= BEDROCK_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 1), y, z + (WorldGeneration.SEED * 1), BEDROCK_ATTRIBUTES) < BEDROCK_ATTRIBUTES.probability) return BlockType.BEDROCK;
         // Give continuity to Perlin generated 3D cave, if due.
-        if (caveProbability > WorldGeneration.caveGenerationAttributes.probability - 0.005 && caveProbability < WorldGeneration.caveGenerationAttributes.probability) return BlockType.AIR;
+        if (Utils.IsCave(x, y, z)) return BlockType.AIR;
         // Biome specific generation
         switch (b)
         {
@@ -109,9 +147,6 @@ public static class BiomeMethods
                 if (y == height) return BlockType.SAND;
                 return BlockType.AIR;
             case Biome.MOUNTAINS:
-                // Tree location
-                if (y > height && y < height + 6 && Utils.IsTree(x, z))
-                    return BlockType.LOG;
                 if (y < stoneHeight)
                 {
                     // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
@@ -124,7 +159,11 @@ public static class BiomeMethods
                 }
 
                 if (y < height) return BlockType.DIRT;
-                if (y == height) return BlockType.GRASS;
+                if (y == height)
+                {
+                    if (y > Biome.MOUNTAINS.GetFloorGenerationAttributes().maxHeight - 20) return BlockType.SNOW;
+                    else return BlockType.GRASS;
+                }
                 return BlockType.AIR;
             default:
                 return BlockType.AIR;

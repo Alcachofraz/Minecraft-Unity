@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
-public class Utils : MonoBehaviour
+public class Utils
 {
-    public static GenerationAttributes biomeGenerationAttributes = new GenerationAttributes(0.45f, 0.002f, 6, 0.7f);
-    public static GenerationAttributes treeGenerationAttributes = new GenerationAttributes(0.10f, 0.9f, 1, 0.7f);
-    public static GenerationAttributes cactusGenerationAttributes = new GenerationAttributes(0.15f, 0.9f, 1, 0.7f);
+    public static GenerationAttributes biomeGenerationAttributes = new GenerationAttributes(0.45f, 0.02f, 1, 0.7f);
+    public static GenerationAttributes treeGenerationAttributes = new GenerationAttributes(0.04f, 0.9f, 1, 0.7f);
+    public static GenerationAttributes cactusGenerationAttributes = new GenerationAttributes(0.12f, 0.9f, 1, 0.7f);
+    public static GenerationAttributes caveGenerationAttributes = new GenerationAttributes(0.45f, 0.005f, 8, 0.5f);
 
     public static int TerrainHeight(float x, float z, BiomeGenerationInfo info)
     {
@@ -31,26 +31,15 @@ public class Utils : MonoBehaviour
         return FBM3D(x * attributes.smoothness, y * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
     }
 
-    public static float Precipitation(float x, float y) {
-        FBM(x * biomeGenerationAttributes.smoothness, z * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
-    }
-
-    public static float Temperature(float x, float y) {
-        FBM((x + WorldGeneration.SEED) * biomeGenerationAttributes.smoothness, (z + WorldGeneration.SEED) * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
-    }
-
-    public static BiomeGenerationInfo WhichBiome(float x, float z)
+    public static float BiomeRate(float x, float z)
     {
-        float bp = FBM(x * biomeGenerationAttributes.smoothness, z * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
-        Biome b = (bp < 0.5f) ? Biome.DESERT : Biome.MOUNTAINS;
-        if (bp >= 0.45 && bp <= 0.55)
-        {
-            return new BiomeGenerationInfo(b, Biome.DESERT, Biome.MOUNTAINS, (bp - 0.45f) * 10);
-        }
-        else
-        {
-            return new BiomeGenerationInfo(b, Biome.DESERT, Biome.MOUNTAINS, 1f);
-        }
+        return FBM(x * biomeGenerationAttributes.smoothness, z * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
+    }
+
+    public static bool IsCave(float x, float y, float z)
+    {
+        float caveProbability = Utils.Noise3D(x, y, z, caveGenerationAttributes);
+        return caveProbability > caveGenerationAttributes.probability - 0.01 && caveProbability < caveGenerationAttributes.probability;
     }
 
     public static bool IsTree(float x, float z)
@@ -95,55 +84,5 @@ public class Utils : MonoBehaviour
             frequency *= 2;
         }
         return total / maxValue;
-    }
-
-    float t;
-    public int plainsMinHeight = 60;
-    public int plainsMaxHeight = 80;
-    public float plainsSmoothness = 0.2f;
-    public int plainsOctaves = 2;
-    public float plainsPersistence = 0.7f;
-    public int mountainsMinHeight = 70;
-    public int mountainsMaxHeight = 120;
-    public float mountainsSmoothness = 0.5f;
-    public int mountainsOctaves = 4;
-    public float mountainsPersistence = 0.7f;
-
-    public float biomeSmoothness = 0.7f;
-    public int biomeOctaves = 1;
-    public float biomePersistence = 0.2f;
-
-    private void Start()
-    {
-        t = 0;
-    }
-
-    private void Update()
-    {
-        /*t += Time.deltaTime;
-        float p = TerrainHeightGenerate(t, 1, new TerrainGenerationAttributes(plainsMinHeight, plainsMaxHeight, plainsSmoothness, plainsOctaves, plainsPersistence));
-        float m = TerrainHeightGenerate(t, 1, new TerrainGenerationAttributes(mountainsMinHeight, mountainsMaxHeight, mountainsSmoothness, mountainsOctaves, mountainsPersistence));
-        float b = Mathf.PerlinNoise(t * biomeSmoothness, (t + WorldGeneration.SEED) * biomeSmoothness);
-
-        float h;
-
-        if (b < 0.4)
-        {
-            h = p;
-        }
-        else if (b > 0.6)
-        {
-            h = m;
-        }
-        else
-        {
-            float new_b = (float)Mathf.Lerp(0f, 1f, Mathf.InverseLerp(0.4f, 0.6f, b));
-            h = (new_b * m + (1 - new_b) * p);
-        }
-
-        Grapher.Log(p, "Plains", Color.green);
-        Grapher.Log(m, "Mountains", Color.black);
-        Grapher.Log(b, "Which Biome", Color.blue);
-        Grapher.Log(h, "Height", Color.red);*/
     }
 }

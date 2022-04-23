@@ -11,14 +11,13 @@ public class Utils
 
     public static int TerrainHeight(float x, float z, BiomeGenerationInfo info)
     {
-        if (info.strength == 1)
-        {
-            return TerrainHeightOfBiome(x, z, info.biome);
+        float ret = 0.0f;
+        foreach (KeyValuePair<Biome, (float, float)> strengths in info.strengths) {
+            float h = TerrainHeightOfBiome(x, z, strengths.Key);
+            ret += h * strengths.Value.Item1;
+            ret += h * strengths.Value.Item2;
         }
-        else
-        {
-            return (int)(TerrainHeightOfBiome(x, z, info.topBiome) * info.strength + TerrainHeightOfBiome(x, z, info.bottomBiome) * (1 - info.strength));
-        }
+        return (int)ret;
     }
 
     public static int TerrainHeightOfBiome(float x, float z, Biome b)

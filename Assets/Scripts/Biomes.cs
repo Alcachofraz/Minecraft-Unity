@@ -12,7 +12,7 @@ public enum Biome
 
 public class BiomeGenerationInfo
 {
-    public float strength;
+    /*public float strength;
     public Biome biome;
     public Biome bottomBiome;
     public Biome topBiome;
@@ -23,6 +23,15 @@ public class BiomeGenerationInfo
         this.biome = biome;
         this.bottomBiome = bottomBiome;
         this.topBiome = topBiome;
+    }*/
+
+    public Dictionary<Biome, (float, float)> strengths;
+    public Biome biome;
+
+    public BiomeGenerationInfo(Biome biome, Dictionary<Biome, (float, float)> strengths)
+    {
+        this.strengths = strengths;
+        this.biome = biome;
     }
 }
 

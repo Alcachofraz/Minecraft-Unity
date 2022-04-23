@@ -47,12 +47,13 @@ public class WorldGeneration
 
     public static int CompareBiomes(Biome b1, Biome b2)
     {
-        return (int)(b1.GetScaleLimits().min * 100f) - (int)(b2.GetScaleLimits().min * 100f);
+        return (int)(b1.GetWhittakerLimits().min * 100f) - (int)(b2.GetWhittakerLimits().min * 100f);
     }
 
     public static BiomeGenerationInfo WhichBiome(int x, int z)
     {
-        float biomeRate = Utils.BiomeRate(x, z);
+        float humidity = Utils.Humidity(x, z);
+        float temperature = Utils.Temperature(x, z);
         Biome biome = Biome.PLAINS;
         Biome topBiome = Biome.PLAINS;
         Biome bottomBiome = Biome.PLAINS;
@@ -63,11 +64,11 @@ public class WorldGeneration
         System.Array.Sort(biomes, CompareBiomes);
 
         for (int i = 0; i < biomes.Length; i++)
-        {
-            if (biomeRate < biomes[i].GetScaleLimits().max && biomeRate > biomes[i].GetScaleLimits().min)
-            {
+        { // For each biome
+            if (humidity < biomes[i].GetWhittakerLimits().MaxHumidity && humidity > biomes[i].GetWhittakerLimits().MinHumidity)
+            { // If humidity matches
                 biome = biomes[i];
-                if (biomeRate > biomes[i].GetScaleLimits().max - 0.05)
+                if (biomeRate > biomes[i].GetWhittakerLimits().max - 0.05)
                 {
                     if (i == biomes.Length)
                     {
@@ -77,12 +78,12 @@ public class WorldGeneration
                     }
                     else
                     {
-                        strength = (biomeRate - (biomes[i].GetScaleLimits().max - 0.05f)) * 10f;
+                        strength = (biomeRate - (biomes[i].GetWhittakerLimits().max - 0.05f)) * 10f;
                         topBiome = biomes[i + 1];
                         bottomBiome = biome;
                     }
                 }
-                else if (biomeRate < biomes[i].GetScaleLimits().min + 0.05)
+                else if (biomeRate < biomes[i].GetWhittakerLimits().min + 0.05)
                 {
                     if (i == 0)
                     {
@@ -92,7 +93,7 @@ public class WorldGeneration
                     }
                     else
                     {
-                        strength = (biomeRate - (biomes[i].GetScaleLimits().min - 0.05f)) * 10f;
+                        strength = (biomeRate - (biomes[i].GetWhittakerLimits().min - 0.05f)) * 10f;
                         topBiome = biome;
                         bottomBiome = biomes[i - 1];
                     }

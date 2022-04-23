@@ -31,9 +31,14 @@ public class Utils
         return FBM3D(x * attributes.smoothness, y * attributes.smoothness, z * attributes.smoothness, attributes.octaves, attributes.persistence);
     }
 
-    public static float BiomeRate(float x, float z)
+    public static float Humidity(float x, float z)
     {
         return FBM(x * biomeGenerationAttributes.smoothness, z * biomeGenerationAttributes.smoothness, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
+    }
+
+    public static float Temperature(float x, float z)
+    {
+        return FBM(x * biomeGenerationAttributes.smoothness + 10000, z * biomeGenerationAttributes.smoothness + 10000, biomeGenerationAttributes.octaves, biomeGenerationAttributes.persistence);
     }
 
     public static bool IsCave(float x, float y, float z)

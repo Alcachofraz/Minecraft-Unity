@@ -6,7 +6,8 @@ public enum Biome
 {
     PLAINS,
     DESERT,
-    MOUNTAINS
+    MOUNTAINS,
+    SNOW
 }
 
 public class BiomeGenerationInfo
@@ -25,15 +26,19 @@ public class BiomeGenerationInfo
     }
 }
 
-public class ScaleLimits
+public class WhittakerLimits
 {
-    public float min;
-    public float max;
+    public float MinHumidity;
+    public float MaxHumidity;
+    public float MinTemperature;
+    public float MaxTemperature;
 
-    public ScaleLimits(float min, float max)
+    public WhittakerLimits(float MinHumidity, float MaxHumidity, float MinTemperature, float MaxTemperature)
     {
-        this.min = min;
-        this.max = max;
+        this.MinHumidity = MinHumidity;
+        this.MaxHumidity = MaxHumidity;
+        this.MinTemperature = MinTemperature;
+        this.MaxTemperature = MaxTemperature;
     }
 }
 
@@ -62,6 +67,7 @@ public static class BiomeMethods
             Biome.PLAINS => new TerrainGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
             Biome.DESERT => new TerrainGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
             Biome.MOUNTAINS => new TerrainGenerationAttributes(62, 130, 0.01f, 1, 0.7f),
+            Biome.SNOW => new TerrainGenerationAttributes(62, 90, 0.003f, 6, 0.7f),
             _ => new TerrainGenerationAttributes(0, 0, 0f, 0, 0f)
         };
     }
@@ -69,28 +75,15 @@ public static class BiomeMethods
     /// <summary>
     /// Get scale limits for biome rate.
     /// </summary>
-    public static ScaleLimits GetScaleLimits(this Biome b)
+    public static WhittakerLimits GetWhittakerLimits(this Biome b)
     {
         return b switch
         {
-            Biome.PLAINS => new ScaleLimits(0.4f, 0.6f),
-            Biome.DESERT => new ScaleLimits(0.6f, 1.0f),
-            Biome.MOUNTAINS => new ScaleLimits(0.0f, 0.4f),
-            _ => new ScaleLimits(0.0f, 0.0f)
-        };
-    }
-
-    /// <summary>
-    /// Get floor generation attributes.
-    /// </summary>
-    public static string ToString(this Biome b)
-    {
-        return b switch
-        {
-            Biome.PLAINS => "Plains",
-            Biome.DESERT => "Desert",
-            Biome.MOUNTAINS => "Mountains",
-            _ => "None"
+            Biome.PLAINS => new WhittakerLimits(0.4f, 0.6f, 0.5f, 1.0f),
+            Biome.DESERT => new WhittakerLimits(0.6f, 1.0f, 0.0f, 1.0f),
+            Biome.MOUNTAINS => new WhittakerLimits(0.0f, 0.4f, 0.0f, 0.5f),
+            Biome.SNOW => new WhittakerLimits(0.0f, 0.4f, 0.0f, 1.0f),
+            _ => new WhittakerLimits(0.0f, 0.0f, 0.0f, 0.0f)
         };
     }
 
@@ -164,6 +157,24 @@ public static class BiomeMethods
                     if (y > Biome.MOUNTAINS.GetFloorGenerationAttributes().maxHeight - 20) return BlockType.SNOW;
                     else return BlockType.GRASS;
                 }
+                return BlockType.AIR;
+            case Biome.SNOW:
+                // Tree location
+                if (y > height && y < height + 6 && Utils.IsTree(x, z))
+                    return BlockType.LOG;
+                if (y < stoneHeight)
+                {
+                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
+                    if (y <= COAL_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
+                    if (y <= IRON_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
+                    if (y <= REDSTONE_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
+                    if (y <= GOLD_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
+                    if (y <= DIAMOND_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
+                    return BlockType.STONE;
+                }
+
+                if (y < height) return BlockType.SNOW;
+                if (y == height) return BlockType.GRASS;
                 return BlockType.AIR;
             default:
                 return BlockType.AIR;

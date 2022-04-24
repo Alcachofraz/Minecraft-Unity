@@ -54,8 +54,8 @@ public class WorldGeneration
     {
         float h = Utils.Humidity(x, z);
         float t = Utils.Temperature(x, z);
-        Biome biome = Biome.PLAINS;
         Dictionary<Biome, (float, float)> strengths = new Dictionary<Biome, (float, float)>();
+        Dictionary<Biome, (float, float)> normalizedStrengths = new Dictionary<Biome, (float, float)>();
 
         Biome[] biomes = (Biome[])System.Enum.GetValues(typeof(Biome));
         //System.Array.Sort(biomes, CompareBiomes);
@@ -63,28 +63,30 @@ public class WorldGeneration
         float sum = 0.0f;
 
         // Find strengths:
-        foreach (Biome b in biomes) {
-            WhittakerLimits w = b.GetWhittakerLimits();
-            if (h > w.MinHumidity && h < w.MaxHumidity && t > w.MinTemperature && t < w.MaxTemperature) {
-                biome = b;
-                foreach (Biome other in biomes) {
-                    if (other == b) continue;
-                    WhittakerLimits wo = other.GetWhittakerLimits();
-                    float strengthHumidity = 1.0f - (Mathf.Abs((wo.MaxHumidity + wo.MinHumidity) / 2.0f - h) - ((wo.MaxHumidity - wo.MinHumidity) / 2.0f - 0.05f)) * 10.0f;
-                    float strengthTemperature = 1.0f - (Mathf.Abs((wo.MaxTemperature + wo.MinTemperature) / 2.0f - t) - ((wo.MaxTemperature - wo.MinTemperature) / 2.0f - 0.05f)) * 10.0f;
-                    sum += strengthHumidity;
-                    sum += strengthTemperature;
-                    strengths[other] = (strengthHumidity, strengthTemperature);
-                }
-            }
+        foreach (Biome other in biomes) {
+            WhittakerLimits wo = other.GetWhittakerLimits();
+            float strengthHumidity = 1.0f - ((Mathf.Abs(((wo.MaxHumidity + wo.MinHumidity) / 2.0f) - h) - (((wo.MaxHumidity - wo.MinHumidity) / 2.0f) - 0.05f)) * 10.0f);
+            float strengthTemperature = 1.0f - ((Mathf.Abs(((wo.MaxTemperature + wo.MinTemperature) / 2.0f) - t) - (((wo.MaxTemperature - wo.MinTemperature) / 2.0f) - 0.05f)) * 10.0f);
+            strengthHumidity = strengthHumidity > 1.0f ? 1.0f : (strengthHumidity < 0.0f ? 0.0f : strengthHumidity);
+            strengthTemperature = strengthTemperature > 1.0f ? 1.0f : (strengthTemperature < 0.0f ? 0.0f : strengthTemperature);
+            if (h < wo.MinHumidity - 0.05 && h > wo.MaxHumidity + 0.05) strengthTemperature = 0.0f;
+            sum += strengthHumidity;
+            sum += strengthTemperature;
+            strengths.Add(other, (strengthHumidity, strengthTemperature));
         }
 
-        // Normalize strengths:
+        (Biome, (float, float)) strongest = (Biome.PLAINS, (0.0f, 0.0f));
+        // Normalize strengths and find bsolute biome:
         foreach (KeyValuePair<Biome, (float, float)> item in strengths) {
-            strengths[item.Key] = (item.Value.Item1 / sum, item.Value.Item2 / sum);
+            if (item.Value.Item1 >= strongest.Item2.Item1 && item.Value.Item2 > strongest.Item2.Item2) strongest = (item.Key, item.Value);
+            normalizedStrengths[item.Key] = (item.Value.Item1 / sum, item.Value.Item2 / sum);
         }
 
-        return new BiomeGenerationInfo(biome, strengths);
+        foreach (KeyValuePair<Biome, (float, float)> item in strengths) {
+            Debug.Log(item.Key + " - " + item.Value + ", ");
+        }
+
+        return new BiomeGenerationInfo(strongest.Item1, normalizedStrengths);
 
         /*for (int i = 0; i < biomes.Length; i++)
         { // For each biome

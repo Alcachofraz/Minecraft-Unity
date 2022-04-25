@@ -120,11 +120,10 @@ public class World : MonoBehaviour
         chunks = new ConcurrentDictionary<string, Chunk>();
         transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-        Vector3 playerPosition = player.transform.position;
         player.transform.position = new Vector3(
-            playerPosition.x + chunkSize / 2,
-            WorldGeneration.GetSpawnHeight((int)playerPosition.x, (int)playerPosition.z),
-            playerPosition.z + chunkSize / 2
+            chunkSize / 2,
+            WorldGeneration.GetSpawnHeight((int)chunkSize / 2, (int)chunkSize / 2),
+            chunkSize / 2
         );
         lastBuiltPosition = player.transform.position;
         BuildRecursiveWorld(WhichChunk(lastBuiltPosition), radius);

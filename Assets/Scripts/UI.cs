@@ -19,7 +19,7 @@ public class UI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentBiome.text = WorldGeneration.WhichBiome((int)player.transform.position.x, (int)player.transform.position.z).biome.ToString();
+        currentBiome.text = Utils.WhichBiome((int)player.transform.position.x, (int)player.transform.position.z).ToString();
         currentCoords.text = player.transform.position.ToString();
     }
 }

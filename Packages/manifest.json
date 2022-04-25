@@ -39,5 +39,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "SharpNoise",
+      "url": "https://github.com/rthome/SharpNoise/releases/tag/v0.12.1.1",
+      "scopes": [
+        "Assets"
+      ]
+    }
+  ]
 }

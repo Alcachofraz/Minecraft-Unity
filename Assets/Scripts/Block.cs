@@ -92,15 +92,15 @@ public class Block
         Block[,,] chunkData;
         if (x < 0 || x >= World.chunkSize || y < 0 || y >= World.chunkSize || z < 0 || z >= World.chunkSize)
         {
-            Vector3 neighbourChunkPosition = owner.gameObject.transform.position 
+            Vector3 neighbourChunkPosition = owner.gameObject.transform.position
                 + new Vector3(
-                    (x - (int)position.x) * World.chunkSize, 
-                    (y - (int)position.y) * World.chunkSize, 
-                    (z - (int)position.z) *World.chunkSize
+                    (x - (int)position.x) * World.chunkSize,
+                    (y - (int)position.y) * World.chunkSize,
+                    (z - (int)position.z) * World.chunkSize
                 );
             string neighbourChunkName = World.ChunkName(neighbourChunkPosition);
             if (World.chunks.TryGetValue(neighbourChunkName, out Chunk neighbourChunk))
-                {
+            {
                 chunkData = neighbourChunk.chunkData;
             }
             else

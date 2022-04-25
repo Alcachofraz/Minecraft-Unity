@@ -12,27 +12,23 @@ public enum Biome
 
 public class BiomeGenerationInfo
 {
-    /*public float strength;
-    public Biome biome;
-    public Biome bottomBiome;
-    public Biome topBiome;
-
-    public BiomeGenerationInfo(Biome biome, Biome bottomBiome, Biome topBiome, float strength)
-    {
-        this.strength = strength;
-        this.biome = biome;
-        this.bottomBiome = bottomBiome;
-        this.topBiome = topBiome;
-    }*/
-
     public Dictionary<Biome, (float, float)> strengths;
+    public Biome biome;
+
+    public BiomeGenerationInfo(Biome biome, Dictionary<Biome, (float, float)> strengths)
+    {
+        this.biome = biome;
+        this.strengths = strengths;
+    }
+
+    /*public Dictionary<Biome, (float, float)> strengths;
     public Biome biome;
 
     public BiomeGenerationInfo(Biome biome, Dictionary<Biome, (float, float)> strengths)
     {
         this.strengths = strengths;
         this.biome = biome;
-    }
+    }*/
 }
 
 public class WhittakerLimits
@@ -88,78 +84,72 @@ public static class BiomeMethods
     {
         return b switch
         {
-            Biome.PLAINS => new WhittakerLimits(0.4f, 0.6f, 0.5f, 1.0f),
+            Biome.PLAINS => new WhittakerLimits(0.4f, 0.6f, 0.0f, 0.5f),
             Biome.DESERT => new WhittakerLimits(0.6f, 1.0f, 0.0f, 1.0f),
-            Biome.MOUNTAINS => new WhittakerLimits(0.0f, 0.4f, 0.0f, 0.5f),
+            Biome.MOUNTAINS => new WhittakerLimits(0.4f, 0.6f, 0.5f, 1.0f),
             Biome.SNOW => new WhittakerLimits(0.0f, 0.4f, 0.0f, 1.0f),
             _ => new WhittakerLimits(0.0f, 0.0f, 0.0f, 0.0f)
         };
     }
 
     /// <summary>
+    /// Spawns trees.
+    /// </summary>
+    public static bool HasTrees(this Biome b)
+    {
+        return b switch
+        {
+            Biome.PLAINS => true,
+            Biome.DESERT => false,
+            Biome.MOUNTAINS => false,
+            Biome.SNOW => true,
+            _ => false
+        };
+    }
+
+    /// <summary>
     /// Generate block, according to floor height and block coordinate.
     /// </summary>
-    public static BlockType GenerateBlockType(this Biome b, float x, float y, float z, int height)
+    public static BlockType GenerateBlockType(this Biome b, int x, int y, int z, int height)
     {
         int stoneHeight = height - 2;
 
         // Level 0 -> Bedrock
         if (y < 1) return BlockType.BEDROCK;
         // Before cave generation, place Bedrock if due (bedrock has priority over any other block).
-        if (y <= BEDROCK_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 1), y, z + (WorldGeneration.SEED * 1), BEDROCK_ATTRIBUTES) < BEDROCK_ATTRIBUTES.probability) return BlockType.BEDROCK;
+        if (y <= BEDROCK_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED * 1), y, z + (WorldGeneration.SEED * 1), BEDROCK_ATTRIBUTES) < BEDROCK_ATTRIBUTES.probability) return BlockType.BEDROCK;
         // Give continuity to Perlin generated 3D cave, if due.
-        if (Utils.IsCave(x, y, z)) return BlockType.AIR;
+        if (y <= height && Utils.IsCave(x, y, z)) return BlockType.AIR;
+        // Tree Log
+        if (b.HasTrees() && Utils.IsTreeLog(x, y, z, height)) return BlockType.LOG;
+        // Tree top
+        if (Utils.IsTreeTop(x, y, z)) return BlockType.LEAVES;
+        // Ore generation
+        if (y < stoneHeight)
+        {
+            // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
+            if (y <= COAL_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
+            if (y <= IRON_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
+            if (y <= REDSTONE_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
+            if (y <= GOLD_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
+            if (y <= DIAMOND_MAX_HEIGHT && Utils.NoiseFBM3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
+            return BlockType.STONE;
+        }
         // Biome specific generation
         switch (b)
         {
             case Biome.PLAINS:
-                // Tree location
-                if (y > height && y < height + 6 && Utils.IsTree(x, z))
-                    return BlockType.LOG;
-                if (y < stoneHeight)
-                {
-                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
-                    if (y <= COAL_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
-                    if (y <= IRON_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
-                    if (y <= REDSTONE_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
-                    if (y <= GOLD_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
-                    if (y <= DIAMOND_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
-                    return BlockType.STONE;
-                }
-
                 if (y < height) return BlockType.DIRT;
                 if (y == height) return BlockType.GRASS;
                 return BlockType.AIR;
             case Biome.DESERT:
                 // Cactus location
-                if (y > height && y < height + Random.Range(2, 4) && Utils.IsTree(x, z))
+                if (Utils.IsCactus(x, y, z, height))
                     return BlockType.CACTUS;
-                if (y < stoneHeight)
-                {
-                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
-                    if (y <= COAL_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
-                    if (y <= IRON_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
-                    if (y <= REDSTONE_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
-                    if (y <= GOLD_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
-                    if (y <= DIAMOND_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
-                    return BlockType.STONE;
-                }
-
                 if (y < height) return BlockType.SANDSTONE;
                 if (y == height) return BlockType.SAND;
                 return BlockType.AIR;
             case Biome.MOUNTAINS:
-                if (y < stoneHeight)
-                {
-                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
-                    if (y <= COAL_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
-                    if (y <= IRON_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
-                    if (y <= REDSTONE_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
-                    if (y <= GOLD_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
-                    if (y <= DIAMOND_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
-                    return BlockType.STONE;
-                }
-
                 if (y < height) return BlockType.DIRT;
                 if (y == height)
                 {
@@ -168,22 +158,8 @@ public static class BiomeMethods
                 }
                 return BlockType.AIR;
             case Biome.SNOW:
-                // Tree location
-                if (y > height && y < height + 6 && Utils.IsTree(x, z))
-                    return BlockType.LOG;
-                if (y < stoneHeight)
-                {
-                    // Coordinates multiplications serve the purpose of generating different noise values. Otherwise, the same value would always be generated.
-                    if (y <= COAL_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 2), y, z + (WorldGeneration.SEED * 2), COAL_ATTRIBUTES) < COAL_ATTRIBUTES.probability) return BlockType.COAL_ORE;
-                    if (y <= IRON_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 3), y, z + (WorldGeneration.SEED * 3), IRON_ATTRIBUTES) < IRON_ATTRIBUTES.probability) return BlockType.IRON_ORE;
-                    if (y <= REDSTONE_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED + 4), y, z + (WorldGeneration.SEED * 4), REDSTONE_ATTRIBUTES) < REDSTONE_ATTRIBUTES.probability) return BlockType.REDSTONE_ORE;
-                    if (y <= GOLD_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 5), y, z + (WorldGeneration.SEED * 5), GOLD_ATTRIBUTES) < GOLD_ATTRIBUTES.probability) return BlockType.GOLD_ORE;
-                    if (y <= DIAMOND_MAX_HEIGHT && Utils.Noise3D(x + (WorldGeneration.SEED * 6), y, z + (WorldGeneration.SEED * 6), DIAMOND_ATTRIBUTES) < DIAMOND_ATTRIBUTES.probability) return BlockType.DIAMOND_ORE;
-                    return BlockType.STONE;
-                }
-
-                if (y < height) return BlockType.SNOW;
-                if (y == height) return BlockType.GRASS;
+                if (y < height) return BlockType.DIRT;
+                if (y == height) return BlockType.SNOW;
                 return BlockType.AIR;
             default:
                 return BlockType.AIR;

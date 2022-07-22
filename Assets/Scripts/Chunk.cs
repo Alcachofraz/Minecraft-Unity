@@ -52,6 +52,50 @@ public class Chunk
         status = ChunkStatus.BUILT;
     }
 
+    public void DrawImmediate()
+    {
+        status = ChunkStatus.DRAWING;
+        for (int z = 0; z < World.chunkSize; z++)
+        {
+            for (int y = 0; y < World.chunkSize; y++)
+            {
+                for (int x = 0; x < World.chunkSize; x++)
+                {
+                    try
+                    {
+                        chunkData[x, y, z].Draw();
+                    }
+                    catch
+                    {
+                        status = ChunkStatus.REMOVED;
+                        return;
+                    }
+                }
+            }
+        }
+        MeshCollider collider;
+        try
+        {
+            CombineQuads();
+            collider = gameObject.AddComponent<MeshCollider>();
+            collider.sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
+        }
+        catch
+        {
+            status = ChunkStatus.REMOVED;
+            return;
+        }
+
+        // Remove friction from mesh collider
+        collider.material.staticFriction = 0;
+        collider.material.dynamicFriction = 0;
+        collider.material.bounciness = 0;
+        collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+        collider.material.bounceCombine = PhysicMaterialCombine.Minimum;
+
+        status = ChunkStatus.DRAWN;
+    }
+
     public IEnumerator Draw()
     {
         status = ChunkStatus.DRAWING;

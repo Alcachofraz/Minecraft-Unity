@@ -8,8 +8,8 @@ public class World : MonoBehaviour
 {
     public GameObject player;
     public Material material;
-    public static int chunkSize = 16;
-    public static int radius = 4;
+    public static int chunkSize = 6;
+    public static int radius = 5;
     public static ConcurrentDictionary<string, Chunk> chunks;
     Vector3 lastBuiltPosition;
     bool loaded = false;

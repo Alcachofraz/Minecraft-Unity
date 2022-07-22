@@ -32,6 +32,11 @@ public class Block
         this.triangles = new int[] { 3, 1, 0, 3, 2, 1 };
     }
 
+    public void setType(BlockType blockType)
+    {
+        this.blockType = blockType;
+    }
+
     void Quad(CubeSide side)
     {
         Mesh mesh = new Mesh();
